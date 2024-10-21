@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Introducción
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
@@ -28,3 +28,16 @@ plot(pressure)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+
+
+
+
+
+##  Código de R 
+Importación de los datos sobre cáncer de estómago en Europa de los años 2005-2013:
+library(readr)
+Incidence_trends_by_period <- read_table("C:/Users/USUARIO/Desktop/INFORMACION SEMINARIO FUENTES/Incidence_trends_by_period.csv")
+View(Incidence_trends_by_period)
