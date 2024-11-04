@@ -10,6 +10,19 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Introducción
+Repositorio creado y desarrollado por alumnas del grupo 102 de la asignatura "Fuentes de Datos Biomédicas y Web Semántica" del grado Ingeniería de la Salud, Universidad de Burgos.
+
+En este proyecto se estudia la relación entre la cantidad de fosfatos en ríos y la posible relación con el cáncer de estómago 
+
+
+
+
+
+
+
+
+
+
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
