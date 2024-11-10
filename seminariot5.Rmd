@@ -15,6 +15,15 @@ Repositorio creado y desarrollado por alumnas del grupo 102 de la asignatura "Fu
 En este proyecto se estudia la relación entre la cantidad de fosfatos en ríos y la posible relación con el cáncer de estómago 
 
 
+##Objetivos y preguntas
+1. La evolución del fosfato en rios (Comparando la toma de datos del primer año con el último.) 
+Debido a la regulación de productos químicos y detergentes, la mejora en el tratamiento de aguas residuales, las prácticas agrícolas sostenibles y la directiva del marco de la UE se nota un descenso general en los niveles de fosfato de los ríos de Europa desde el año 2000 al año 2021.
+El promedio de niveles de fosfato de todos los ríos de Europa en el año 2000 es de 0,102672727 y en el año 2021 es de 0,066486364. Sin embargo, hay países que no cumplen esta regla como es el caso de España, en el año 2000 la concentración de fosfato en ríos era de 0,113 y el 2021 de 0,199.
+
+2. País con más fosfato en ríos, por qué.
+En los años 2000, 2002, 2003, 2004 y 2012, Serbia registró los niveles más altos de fosfato en sus ríos, mientras que en el resto de los años fue el Norte de Macedonia quien reportó los peores datos. Al comparar estos niveles con los de países como Noruega, la diferencia es notable: por ejemplo, en el año 2000, el Norte de Macedonia alcanzó 0,4731 mg de PO₄ por litro, mientras que Noruega registró solo 0,004 mg de PO₄/L.
+
+Esta diferencia se debe a que países más desarrollados, como Noruega y Finlandia, tienen un PIB per cápita mucho más alto, lo que les permite invertir en sistemas avanzados de agua y saneamiento. Estos sistemas están altamente desarrollados y son muy eficientes en el tratamiento de aguas residuales, reduciendo significativamente los niveles de fosfato en sus ríos.
 
 
 
