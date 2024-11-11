@@ -11,6 +11,8 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Repositorio GitHub: https://github.com/maf1013/Practica5.git 
+
 ## Introducción
 Repositorio creado y desarrollado por alumnas del grupo 102 de la asignatura "Fuentes de Datos Biomédicas y Web Semántica" del grado Ingeniería de la Salud, Universidad de Burgos.
 
