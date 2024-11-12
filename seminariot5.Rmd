@@ -3,6 +3,7 @@ title: "Seminario tema 5"
 author: 
   - "María Acevedo Fernández"
   - "Carmen Albillos Gubia"
+enlace a github [https://github.com/maf1013/Practica5]
 date: "`r Sys.Date()`"
 output: html_document
 ---
