@@ -32,9 +32,15 @@ View(rivers_orthophoshate_3)
 #DATOS FOSFATO EUROPA
 library(readr)
 fosfato_rios<- read_csv("INPUT/DATA/eea_s_eu-sdg-06-50_p_2000-2021_v03_r00.csv")
-fosfato_rios <- fosfato_rios %>% select(-c(1,2,3,5,10))
+fosfato_rios <- fosfato_rios %>% select(-c(1,2,3,4,5,10))
                                              
 fosfato_rios <- fosfato_rios %>% slice(-c(1:44))
+fosfato_rios <- fosfato_rios %>%
+  mutate(Registro = paste(geo, geo_label, sep = "  "))
+fosfato_rios <- fosfato_rios %>%
+  select(-geo, -geo_label)
+
+
 View(fosfato_rios)
 
 
