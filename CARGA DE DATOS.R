@@ -62,8 +62,19 @@ View(fosfato_rios)
 ###################################################################################################
 #DATOS DE ORTOFOSFATO EN RÍOS DE EUROPA
 library(readr)
-rivers_orthophoshate_3 <- read_csv("C:/Users/USUARIO/Desktop/INFORMACION SEMINARIO FUENTES/rivers-orthophoshate-3.csv")
-rivers_orthophoshate_3 <- rivers_orthophoshate_3 %>% select(-`Period:text`)
+library(dplyr)
+
+# Cargar el archivo CSV y realizar todas las transformaciones en una sola tubería
+rivers_orthophoshate_3 <- read_csv("C:/Users/USUARIO/Desktop/INFORMACION SEMINARIO FUENTES/rivers-orthophoshate-3.csv") %>%
+  select(-`Period:text`) %>%                                
+  rename(País = `Country:text`,                           
+         Año = `Year:year`,                                 
+         fosfato = colnames(.)[3]) %>%                      
+  arrange(desc(fosfato))    # Ordenar por "fosfato" en orden descendente
+
+# Visualizar los datos en el visor de RStudio
 View(rivers_orthophoshate_3)
+
+
 
 
