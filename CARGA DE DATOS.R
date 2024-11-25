@@ -28,7 +28,10 @@ cancer_estomago <- cancer_estomago %>%
   rename(`Año 2009` = Year_2009) %>%
   rename(`Año 2010` = Year_2010) %>%
   rename(`Año 2011` = Year_2011) %>%
-  rename(`Año 2012` = Year_2012)
+  rename(`Año 2012` = Year_2012) %>%
+  rename(`Año 2013` = Year_2013) %>%
+  pivot_longer(cols = c(`Año 2006`:`Año 2013`), names_to = "Año", values_to = "Casos")
+  
 
 
 
@@ -70,8 +73,8 @@ rivers_orthophoshate_3 <- read_csv("C:/Users/USUARIO/Desktop/INFORMACION SEMINAR
   rename(País = `Country:text`,                           
          Año = `Year:year`,                                 
          fosfato = colnames(.)[3]) %>%                      
-  arrange(desc(fosfato))    # Ordenar por "fosfato" en orden descendente
-
+  arrange(desc(fosfato))   # Ordenar por "fosfato" en orden descendente
+ 
 # Visualizar los datos en el visor de RStudio
 View(rivers_orthophoshate_3)
 
