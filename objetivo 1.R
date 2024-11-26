@@ -20,10 +20,12 @@ promedio_fosfato_por_año <- Fosfato %>%
 View(promedio_fosfato_por_año)
 
 
-#En los resultados obtenidos podemos observar que desde 1
+#En los resultados obtenidos podemos observar que desde 1992 a 2018 hay un descenso general en el
+#nivel de fosfato en ríos. Se evoluciona de una concentración de 0,13 en 1992 a 0,08 en 2018. 
+#Se alcanzó el menor nivel de fosfato en ríos en el año 2010.
 
 #Generar gráfica para estudiar la evolución de los fosfatos en Europa 
-grafico_fosfato<-ggplot(data=Fosfato, aes(x=Año,y=Fosfato))+
+grafico_fosfato<-ggplot(data=promedio_fosfato_por_año, aes(x=Año,y=promedio_fosfato))+
                  geom_point(na.rm=TRUE, colour="deeppink")+
                  geom_smooth(na.rm=TRUE)+
                  labs(x="Años",
