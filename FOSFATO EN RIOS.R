@@ -34,3 +34,27 @@ grafico_fosfato<-ggplot(data=promedio_fosfato_por_año, aes(x=Año,y=promedio_fo
                    
                  )
 grafico_fosfato
+
+#A continuación, se estudiará cuáles son los países con mayor cantidad de fosfato.
+maximo_fosfato<- Fosfato%>%
+  group_by(Año) %>%  # Agrupar los datos por Año
+  filter(Fosfato == max(Fosfato)) %>%
+  arrange(Año)
+
+View(maximo_fosfato)
+
+
+#Se realiza un diagrama de barras con los paises
+grafico_paises <- ggplot(maximo_fosfato, aes(x = País, y = Fosfato, fill = País)) +
+  geom_bar(stat = "identity", show.legend = FALSE) + 
+  labs(
+    x = "País",
+    y = "Concentración de Fosfato",
+    title = "País con mayor concentración de fosfato"
+  ) +
+  theme_minimal()
+grafico_paises
+
+
+
+
