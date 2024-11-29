@@ -142,8 +142,7 @@ Fosfato <- read_csv("INPUT/DATA/fosfato.csv") %>%
   arrange(País)   # Ordenar País por orden alfabético
 View(Fosfato)
 
-
-#################################################################################################
+###############################################################################################
 #DATOS ECONOMÍA EUROPA
 library(readr)
 library(dplyr)
