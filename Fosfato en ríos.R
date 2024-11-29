@@ -1,15 +1,4 @@
-#DATOS DE ORTOFOSFATO EN RÍOS DE EUROPA
-library(readr)
-library(dplyr)
-library(ggplot2)
-# Cargar el archivo CSV y realizar todas las transformaciones en una sola tubería
-Fosfato <- read_csv("C:/Users/USUARIO/Desktop/INFORMACION SEMINARIO FUENTES/rivers-orthophoshate-3.csv") %>%
-  select(-`Period:text`) %>%                                
-  rename(País = `Country:text`,                           
-         Año = `Year:year`,                                 
-         Fosfato = colnames(.)[3]) %>%                      
-  arrange(País)   # Ordenar País por orden alfabético
-View(Fosfato)
+
 
 #En primer lugar, vamos a estudiar la evolución de los fosfatos en ríos.
 #Para ello se crea una nueva tabla por años que incluye el promedio de todos los países 
@@ -44,7 +33,7 @@ maximo_fosfato<- Fosfato%>%
 View(maximo_fosfato)
 
 
-#Se realiza un diagrama de barras con los paises
+#Se realiza un diagrama de barras con los paises que tienen más fosfato
 grafico_paises <- ggplot(maximo_fosfato, aes(x = País, y = Fosfato, fill = País)) +
   geom_bar(stat = "identity", show.legend = FALSE) + 
   labs(
@@ -54,6 +43,29 @@ grafico_paises <- ggplot(maximo_fosfato, aes(x = País, y = Fosfato, fill = Paí
   ) +
   theme_minimal()
 grafico_paises
+
+
+#Ahora, vamos a estudiar la posible relación de la economía con el nivel de fosfato en ríos
+fosfato_ec<-left_join(x=economia,y=Fosfato,by= c("País","Año")) #Al hacer este join, se mantienen 
+#todos los años de datos de ECONOMIA, pero en los datos de fosfato, no hay valores para algunos 
+#años, para eliminar los valores de NA:
+fosfato_ec <- fosfato_ec[!is.na(fosfato_ec$Fosfato), ]
+View(fosfato_ec)
+
+#como a mayor PIB, mayor es la econmia de ese pais vamos a estudiar si a menor PIB hay mayor 
+#cantidad de fosfato en ríos.
+menor_PIB<- fosfato_ec%>%
+  group_by(Año)%>%
+  filter(PIB == min(PIB)) %>%
+  arrange(Año)
+View(menor_PIB)
+
+mayor_PIB<-fosfato_ec%>%
+  group_by(Año)%>%
+  filter(PIB == max(PIB)) %>%
+  arrange(Año)
+View(mayor_PIB)
+  
 
 
 

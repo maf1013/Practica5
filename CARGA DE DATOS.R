@@ -62,7 +62,7 @@ cancer_estomago <- cancer_estomago %>%
 cancer_estomago <- cancer_estomago %>%
   mutate(Casos = as.numeric(Casos))%>%
   group_by(Pais, Año, Sexo)%>%
-  summarise(Casos = sum(Casos, na.rm = TRUE), .groups = "drop") # se puede añadir: , .groups = "drop"  #Usamos summarise porque queremos cambair el numero de filas original
+  summarise(Casos = sum(Casos, na.rm = TRUE), .groups = "drop") # se puede añadir: , .groups = "drop"  #Usamos summarise porque queremos cambiar el numero de filas original
 
 
 View(cancer_estomago)
@@ -129,43 +129,38 @@ min_casos
   
 ####################################################################################################
 
-#DATOS FOSFATO EUROPA
-library(readr)
-library(stringr)
-
-fosfato_rios<- read_csv("INPUT/DATA/eea_s_eu-sdg-06-50_p_2000-2021_v03_r00.csv")
-fosfato_rios <- fosfato_rios %>%
-  select(-c(1, 2, 3, 4, 5, 10)) %>%               # Elimina las columnas 1, 2, 3, 4, 5 y 10
-  slice(-c(1:44)) %>%                             # Elimina las filas 1 a 44
-  mutate(Registro = paste(geo, geo_label, sep = "  ")) %>%  # Crea una nueva columna "Registro"
-  select(-geo, -geo_label) %>%                    # Elimina las columnas geo y geo_label
-  relocate(Registro, .before = time) %>%          # Mueve la columna "Registro" antes de "time"
-  pivot_wider(                                    # Convierte la tabla de formato largo a ancho
-    names_from = "time", 
-    values_from = "obs_value"
-  ) %>%
-  rename(País=Registro) %>%
-  rename_with(~ str_replace(., "^\\d{4}$", "Año \\0"))
-  
-
-
-View(fosfato_rios)
-
 ###################################################################################################
-#DATOS DE ORTOFOSFATO EN RÍOS DE EUROPA
+#DATOS DE FOSFATO EN RÍOS DE EUROPA
 library(readr)
 library(dplyr)
-
-# Cargar el archivo CSV y realizar todas las transformaciones en una sola tubería
-rivers_orthophoshate_3 <- read_csv("C:/Users/USUARIO/Desktop/INFORMACION SEMINARIO FUENTES/rivers-orthophoshate-3.csv") %>%
+library(ggplot2)
+Fosfato <- read_csv("INPUT/DATA/fosfato.csv") %>%
   select(-`Period:text`) %>%                                
   rename(País = `Country:text`,                           
          Año = `Year:year`,                                 
-         fosfato = colnames(.)[3]) %>%                      
-  arrange(desc(fosfato))   # Ordenar por "fosfato" en orden descendente
- 
-# Visualizar los datos en el visor de RStudio
-View(rivers_orthophoshate_3)
+         Fosfato = colnames(.)[3]) %>%                      
+  arrange(País)   # Ordenar País por orden alfabético
+View(Fosfato)
+
+
+
+#################################################################################################
+#DATOS ECONOMÍA EUROPA
+library(readr)
+library(dplyr)
+library(tidyverse)
+
+economia <- read_csv("INPUT/DATA/economia.csv")
+
+economia<-economia%>%
+  select(-c(1, 2, 3, 4, 5,9))%>%   #se eliminan columnas innecesarias 
+  slice(-c(178:189),-c(118:141))%>%
+  rename(País=geo,
+         Año=TIME_PERIOD,
+         PIB=OBS_VALUE)
+View(economia)
+
+
 
 
 
