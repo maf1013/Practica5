@@ -6,32 +6,38 @@ library(dplyr)
 library(tidyverse)
 library(ggplot2)
 
-# Carga el archivo usando comillas como delimitador
+# Se carga el archivo usando comillas como delimitador
 cancer_estomago <- read_delim("INPUT/DATA/cancer_estomago.csv", delim = "\"", 
-                              escape_backslash = TRUE, escape_double = FALSE, trim_ws = TRUE)
-
-# Divide la columna de años en varias columnas nuevas
-cancer_estomago <- 
-  cancer_estomago %>%
+                              escape_backslash = TRUE, escape_double = FALSE, trim_ws = TRUE) %>%
+  
+  # Separar la columna con los años (2005-2013) en columnas individuales para cada año
+  # La columna contiene los valores de varios años, por lo que usamos separate() para dividirla
   separate(
-    col = c(`,2005,2006,2007,2008,2009,2010,2011,2012,2013,`),
-    into = paste0("Año_", 2005:2013), 
-    sep = ","
-  ) %>% 
+    col = c(`,2005,2006,2007,2008,2009,2010,2011,2012,2013,`), #La columna que contiene los años
+    into = paste0("Año_", 2005:2013), #Nombres de las nuevas columnas (Año_2005, Año_2006, ..., Año_2013)
+    sep = "," #Delimitador para separar los valores
+  ) %>%
+  
+  # Elimina columnas innecesarias
   select(-`Indicator,`, -`...1`, -`...3`, -`...5`, -`,...6`, -`...7`, -`...9`,
          -`,...10`, -`...11`, -`...13`, -`,...14`, -`...15`, -`...17`, -`...19`, -`Año_2005`,
-         -`Cancer`,  -`Age Group`) %>% 
-  slice(-c(247, 248, 249)) %>%
-  rename(Pais_Ciudad = Registry)%>%
-  rename(Sexo=Sex)%>%
-  pivot_longer(cols = c(`Año_2006`:`Año_2013`), names_to = "Año", values_to = "Casos") 
+         -`Cancer`,  -`Age Group`) %>%
   
+  # Elimina filas que están llenas de valores nulos
+  slice(-c(247, 248, 249)) %>%
 
-cancer_estomago <- cancer_estomago %>%
+  # Se renombran las columnas
+  rename(Pais_Ciudad = Registry) %>%
+  rename(Sexo = Sex) %>%
+  
+  # Convertir columnas anchas en formato largo para poder trabajar mejor los datos próximamente
+  pivot_longer(cols = c(`Año_2006`:`Año_2013`), names_to = "Año", values_to = "Casos") %>%
+  
+  # Se crea una nueva columna País basada en los prefijos de Pais_Ciudad. 
   mutate(
     Pais = case_when(
       str_starts(Pais_Ciudad, "AT") ~ "Austria",
-      str_starts(Pais_Ciudad, "BE") ~ "Belgica",
+      str_starts(Pais_Ciudad, "BE") ~ "Bélgica",
       str_starts(Pais_Ciudad, "BG") ~ "Bulgaria",
       str_starts(Pais_Ciudad, "CH") ~ "Suiza",
       str_starts(Pais_Ciudad, "DE") ~ "Alemania",
@@ -54,19 +60,24 @@ cancer_estomago <- cancer_estomago %>%
       str_starts(Pais_Ciudad, "SI") ~ "Eslovenia",
       str_starts(Pais_Ciudad, "SK") ~ "Eslovaquia",
       str_starts(Pais_Ciudad, "UA") ~ "Ucrania",
-      str_starts(Pais_Ciudad, "UK") ~ "Reino Unido")) %>%
+      str_starts(Pais_Ciudad, "UK") ~ "Reino Unido"
+    )
+  ) %>%
+  
+  # Después de haber creado la nueva columna País, se elimina País_Ciudad porque ya no nos interesa
   select(-Pais_Ciudad) %>%
-  relocate(Pais, Año, Sexo, Casos)
-
- 
-cancer_estomago <- cancer_estomago %>%
-  mutate(Casos = as.numeric(Casos))%>%
-  group_by(Pais, Año, Sexo)%>%
-  summarise(Casos = sum(Casos, na.rm = TRUE), .groups = "drop") # se puede añadir: , .groups = "drop"  #Usamos summarise porque queremos cambiar el numero de filas original
-
+  relocate(Pais, Año, Sexo, Casos) %>%
+  #Convertir los valores de la columna Casos a numéricos
+  mutate(Casos = as.numeric(Casos)) %>%
+  
+  # Agrupar los datos por "Pais", "Año" y "Sexo", y luego calcular la suma de los casos por grupo
+  group_by(Pais, Año, Sexo) %>%
+  summarise(Casos = sum(Casos, na.rm = TRUE), .groups = "drop") 
+  #Con .groups=drop se consigue que se devuelvan los resultados sin estar agrupados por las variables País, Año y Sexo
+  #Esto es necesario para conseguir que los datos sean la suma de un país entero y no aparezcan 
+  #agrupados por regiones.
 
 View(cancer_estomago)
-
 
 ###### PREGUNTA 3: ¿El cáncer de estómago se ve influenciado por el sexo de los pacientes?
 #Evaluación general de sexo frente a casos
@@ -135,11 +146,11 @@ library(readr)
 library(dplyr)
 library(ggplot2)
 Fosfato <- read_csv("INPUT/DATA/fosfato.csv") %>%
-  select(-`Period:text`) %>%                                
+  select(-`Period:text`) %>%  #Se eliminina una columna que estaba llena de texto innecesario                           
   rename(País = `Country:text`,                           
-         Año = `Year:year`,                                 
-         Fosfato = colnames(.)[3]) %>%                      
-  arrange(País)   # Ordenar País por orden alfabético
+         Año = `Year:year`,         #Se renombran las columnas               
+         Fosfato = colnames(.)[3]) %>%   #El nombre de la tercera columna mg P/I:number se sustituye por Fosfato         
+  arrange(País)   # Ordena la tabla por orden alfabético de País
 View(Fosfato)
 
 ###############################################################################################
@@ -152,9 +163,9 @@ economia <- read_csv("INPUT/DATA/economia.csv")
 
 economia<-economia%>%
   select(-c(1, 2, 3, 4, 5,9))%>%   #se eliminan columnas innecesarias 
-  slice(-c(178:189),-c(118:141))%>%
+  slice(-c(178:189),-c(118:141))%>% #Se eliminan las filas innecesarias
   rename(País=geo,
-         Año=TIME_PERIOD,
+         Año=TIME_PERIOD,   #Se renombran las columnas 
          PIB=OBS_VALUE)
 View(economia)
 
