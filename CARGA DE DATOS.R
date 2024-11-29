@@ -143,7 +143,6 @@ Fosfato <- read_csv("INPUT/DATA/fosfato.csv") %>%
 View(Fosfato)
 
 
-
 #################################################################################################
 #DATOS ECONOMÍA EUROPA
 library(readr)
