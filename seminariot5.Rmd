@@ -1,5 +1,5 @@
 ---
-title: "CÁNCER DE ESTÓMAGO, FOSFATO EN RÍOS Y ECONOMÍA"
+title: <span style="color:#4ba776">CÁNCER DE ESTÓMAGO, FOSFATO EN RÍOS Y ECONOMÍA</span>
 author: 
   - name: "María Acevedo Fernández"
   - name: "Carmen Albillos Gubia" 
@@ -27,7 +27,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Repositorio GitHub: <https://github.com/maf1013/Practica5.git>
 
-## <span style="color:#4ba776">1. INTRODUCCIÓN</span>
+## 1. INTRODUCCIÓN
 
 En este proyecto se estudia la posible relación entre el ***cáncer de estómago*** y la cantidad de ***fosfatos en ríos***. Además de cómo se ven influenciados por la ***economía*** de cada país Europeo. Para ello se ha recogido información sobre:
 
