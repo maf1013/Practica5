@@ -381,7 +381,7 @@ DT::datatable(ranking_macedonia)
 Se realiza una gráfica para poder estudiar mejor la posible relación:
 
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
 #En un solo data frame, combina los datos del ranking de Noruega y Macedonia del Norte, añadiendo la columna "Pais"
 datos_combinados <- bind_rows(
   ranking_noruega %>% mutate(Pais = "Noruega"),
@@ -413,7 +413,7 @@ grafico_pib_fosfato<-ggplot(datos_largo, aes(x = Año, y = Valor, color = Pais))
 
 ```
 
-```{r, echo =FALSE}
+```{r, echo =FALSE, warning=FALSE, message=FALSE}
 plot(grafico_pib_fosfato)
 ```
 
@@ -464,13 +464,13 @@ DT::datatable(cancer_sexo_total)
 
 Por otra parte, se hace la misma evaluación que antes pero en este caso diferenciando cada país. Se puede observar que la proporción de casos es similar que en la evaluación global.
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, message=FALSE}
 cancer_sexo_pais <- cancer_estomago %>%
   group_by(Sexo, País) %>%
   summarise(Casos_promedio = mean(Casos, na.rm = TRUE))
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE}
 DT::datatable(cancer_sexo_pais)
 ```
 
