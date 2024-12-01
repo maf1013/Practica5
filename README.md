@@ -24,7 +24,7 @@ En este proyecto se estudia la posible relación entre el ***cáncer de estómag
 2.  Cantidad de fosfato en los distintos ríos de los paises europeos.
 3.  Relación del PIB de Europa con la cantidad de fosfato en ríos.
 4.  Influencia del sexo de los pacientes con el cáncer de estómago.
-5.  Evolución del cáncer de estómago a lo largo del tiempo.
+5.  Evolución de las tasas de cáncer de estómago a lo largo del tiempo.
 6.  Relación del cáncer de estómago con la cantidad de fosfatos en ríos.
 
 ### CONCLUSIÓN FINAL

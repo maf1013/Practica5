@@ -19,6 +19,7 @@ ggplot(cancer_estomago, aes(x= Año, y = Casos))+
         x = "Año",
         y = "Número de casos",
         fill = "Sexo") +
+  scale_x_continuous(breaks = seq(min(cancer_estomago$Año), max(cancer_estomago$Año))) +
   theme_light()+
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
@@ -53,4 +54,43 @@ min_casos <- cancer_estomago %>%
 min_casos
 
 ####################################################################################################
+#Pais con más cancer
+maximo_fosfato<- Fosfato%>%
+  group_by(Año) %>%  # Agrupar los datos por Año
+  filter(Cantidad_Fosfato == max(Cantidad_Fosfato)) %>%
+  arrange(Año)
 
+View(maximo_fosfato)
+#Y los países con menor cantidad de fosfato
+minimo_fosfato<- Fosfato%>%
+  group_by(Año) %>%  # Agrupar los datos por Año
+  filter(Cantidad_Fosfato == min(Cantidad_Fosfato)) %>%
+  arrange(Año)
+
+
+
+#Se realiza un diagrama de barras con los paises que tienen más fosfato
+
+ggplot(maximo_fosfato, aes(x = factor(Año), y = Cantidad_Fosfato)) +
+  geom_bar(aes(fill = País),stat = "identity") + 
+  labs( title = "Países con mayor concentración de fosfato en ríos",
+        x = "País",
+        y = "Concentración de Fosfato") +
+  theme_light()+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+#Se realiza otro diagrama de barras para tener en cuenta cuáles son los países con menos fosfato
+ggplot(minimo_fosfato, aes(x = factor(Año), y = Cantidad_Fosfato, fill = País)) +
+  geom_bar(stat = "identity", position = "dodge") +  # Usa 'dodge' para separar las barras
+  labs(
+    title = "Países con menor concentración de fosfato en ríos",
+    x = "Año",  
+    y = "Concentración de Fosfato"
+  ) +
+  theme_light() +
+  theme(
+    axis.text.x = element_text(angle = 90, hjust = 1),  # 90 grados para etiquetas en el eje X
+    axis.title.x = element_text(size = 14),
+    axis.title.y = element_text(size = 14),
+    legend.position = "top"  # Ubicar la leyenda en la parte superior para que se vea con claridad
+  )

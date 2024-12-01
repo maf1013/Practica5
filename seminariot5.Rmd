@@ -431,15 +431,74 @@ La diferencia entre el PIB y los niveles de fosfato podría ser el resultado de 
 
 
 
-### 4. ¿El cancer de estómago se ve influenciado por el sexo de los pacientes?
+### 4. Influencia del sexo de los pacientes con el cáncer de estómago.
+En este apartado vamos a estudiar si el sexo de los pacienetes tiene alguna relación con el desarrollo d cáncer de estómago.
 
-Podemos concluir que los hombres tienen un mayor predisposición a sufrir cáncer de estómago que las mujeres. Podemos tomar varios países de ejemplo para observar esta relación calculando el promedio de los datos de todos los años presentes: - En Austria (AT) los hombres tienen una incidencia de 25,53, sin embargo las mujeres tienen una incidencia de 13,51 - En Dinamarca (DK) los hombres tienen una incidencia de 16,44, sin embargo las mujeres tienen una incidencia de 6,95 En ambos paises podemos observar como el riesgo a cancer de estómago en el sexo masculino es aproximadamente el doble que en el sexo femenino.
+#### 4.1 Metodología y resultados
+En primer lugar vamos a observar un análisis global. Es decir el número de casos de cáncer de estómago en cada sexo en total, sin diferenciar ni el año ni el país.
 
-Esto se debe a varios factores: - Factores hormonales: El estrógeno es una hormona femenina que tiene un efecto protector contar el cáncer gástrico, por lo que las mujeres premenopúsicas son las que menos riesgo tienen de sufrirlo, ya que son las personas con niveles más altos de esta hormona - Infección por Helicobacter Pylori: esta bacteria es una de las causas principales de cáncer de estómago. Y aunque la tasa de infección es similar para ambos sexos, el desarrollo de cáncer a partri de esta infección es más común en los hombres. - Estilo de vida: según las estadísticas los hombres tienden a un mayor consumo de tabaco y alcohol, factores de riesgo para el desarrollo de cáncer de estómago.
+```{r, echo = TRUE}
+cancer_sexo_total <- cancer_estomago %>%
+  group_by(Sexo) %>%
+  summarise(Casos_promedio = mean(Casos, na.rm = TRUE))
 
-Además podemos destacar que otro factor que afecta considerablemente en el desarrollo de este cáncer es la edad, que afecta a ambos sexos.
+```
 
-### 5. ¿En los paises europeos más desarrollados y con mejor economía hay una menor tasa de cáncer de estómago?
+```{r, echo=FALSE}
+DT::datatable(cancer_sexo_total)
+
+```
+
+
+Por otra parte vamos a hacer la misma evaluación que antes pero en este año diferenciando en cada país. Donde podemos observar que la proporción de casos es similar que en la evaluación global.
+
+```{r, echo=TRUE}
+cancer_sexo_pais <- cancer_estomago %>%
+  group_by(Sexo, País) %>%
+  summarise(Casos_promedio = mean(Casos, na.rm = TRUE))
+```
+
+```{r, echo=FALSE}
+DT::datatable(cancer_sexo_pais)
+```
+
+Por último vamos a realizar un gráfico de barras para visualizar mejor esta relació del sexo con el desarrollo de cáncer de estómago. En este caso haremos un análisis conjunto de todos los países a lo largo de los años:
+
+```{r, echo=TRUE}
+grafico_sexo_años <- ggplot(cancer_estomago, aes(x= Año, y = Casos))+
+  geom_bar(aes(fill = Sexo), position = "dodge", stat = "identity") +   
+  #A stat le damos el valor identity, ya que queremos que use los valores de Casos, no que cuente las ocurrencias de esta variable.
+  labs( title ="Número de casos de Cáncer de \n Estómago por Sexo y Año",
+        x = "Año",
+        y = "Número de casos",
+        fill = "Sexo") +
+  scale_x_continuous(breaks = seq(min(cancer_estomago$Año), max(cancer_estomago$Año))) +
+  theme_light()+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r, echo = FALSE}
+plot(grafico_sexo_años)
+```
+
+
+#### 4.2 Conclusiones
+
+Observando los datos y la gráfica podemos concluir sin ningún tipo de duda que los ***hombres*** tienen una mayor predisposición a sufrir cáncer de estómago que las mujeres. 
+Realizando un análisis tanto por países como por años, podemos concluir que el riesgo a cancer de estómago en el sexo masculino es aproximadamente el ***doble*** que en el sexo femenino.
+
+Esto se puede deber a varios factores: 
+
+-   <u>Factores hormonales:</u> El estrógeno es una hormona femenina que tiene un efecto protector contar el cáncer gástrico, por lo que las mujeres premenopaúsicas son las que menos riesgo tienen de sufrirlo, ya que son las personas con niveles más altos de esta hormona.
+
+-   <u>Infección por Helicobacter Pylori:</u> esta bacteria es una de las causas principales de cáncer de estómago. Y aunque la tasa de infección es similar para ambos sexos, el desarrollo de cáncer a partir de esta infección es más común en los hombres. 
+
+-   <u>Estilo de vida:</u> según las estadísticas los hombres tienden a un mayor consumo de tabaco y alcohol, factores de riesgo para el desarrollo de cáncer de estómago.
+
+
+Además, podemos destacar otro factor que afecta considerablemente en el desarrollo de este cáncer, que es la edad,el cual afecta a ambos sexos.
+
+ 5. ¿En los paises europeos más desarrollados y con mejor economía hay una menor tasa de cáncer de estómago?
 
 Según el Índice de Desarrollo Humano (IDH), los países más desarrollados en Europa son: - Noruega: 13.072 - Suiza: 11.68
 
@@ -447,9 +506,48 @@ Sin embargo, entre los páises menos desarrollados se encuentra: - Ucrania: 33.3
 
 En este último país vemos que hay una incidencia de más del doble en comparación con los dos países primeros. Esto se debe a que en los países más desarrollados tienen una mejor calidad de vida, una estabilidad económica y financiera y eficientes servicios públicos, como es la sanidad. Por otro lado, en países no tan desarrollados como por ejemplo Ucrania, podemos ver una inestabilidad económica agravada por los conflictos políticos.
 
-### 6. ¿Las tasas de cáncer de estómago han aumentado o disminuido con el tiempo?
+### 5.  Evolución de las tasas de cáncer de estómago a lo largo del tiempo.
 
-En todos los países podemos ver que la incidencia se ha mantenido costante pero tiende ha disminuir Esto se puede deber a mejoras en la dieta, mejoras en el estilo de vida y mejoras de sistemas de detección y tratamientos de cáncer entre otros.
+En este punto vamos a analizar el número de casos de cáncer de estómago, sin diferenciar el sexo ni el país, en cada año.
+
+#### 5.1 Metodología y resumenes.
+```{r, echo = TRUE}
+tendencia_cancer <- cancer_estomago %>%
+  group_by(Año) %>%
+  summarise(Casos_promedio = mean(Casos, na.rm = TRUE))
+```
+
+```{r, echo=FALSE}
+DT::datatable(tendencia_cancer)
+```
+
+Esta tendencia del cáncer de estómago a lo largo del tiempo la podemos visualizar mejor con una gráfica:
+
+```{r, echo = TRUE}
+grafica_tendencia_cancer <- ggplot(cancer_estomago, aes(x = factor(Año), y = Casos))+
+  geom_bar(fill = "turquoise",stat = "identity") +
+  labs( title = "Número de casos de Cáncer de Estómago por Año",
+        x = "Año",
+        y = "Casos")+
+  theme_light()+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r, echo=FALSE}
+plot(grafica_tendencia_cancer)
+```
+
+#### 5.2 Conclusiones
+
+Observando la gráfica y los datos podemos concluir que la incidencia de cáncer de estómago disminuye con el paso del tiempo, destacando una disminución más notable en los dos ultimo años del experimento. Por lo que si sigue esta tendencia, podremos suponer que en la actualidad habrán disminuido considerablemente los casos de cáncer de estómago. 
+
+Esto se puede deber a:
+
+-   Mejoras en la dieta
+-   Mejoras en el estilo de vida
+-   Mejoras en los sistemas de detección y tratamientos de cáncer, entre otros
+
+
 
 ### 7. ¿El cáncer de estómago está relacionado con la cantidad de fosfatos en ríos?
 
