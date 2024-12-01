@@ -60,7 +60,7 @@ ggplot(maximo_fosfato, aes(x = factor(Año), y = Cantidad_Fosfato)) +
 
 #Se realiza otro diagrama de barras para tener en cuenta cuáles son los países con menos fosfato
 ggplot(minimo_fosfato, aes(x = factor(Año), y = Cantidad_Fosfato, fill = País)) +
-  geom_bar(stat = "identity", position = "dodge") +  # Usa 'dodge' para separar las barras
+  geom_bar(stat = "identity", position = "dodge") +
   labs(
     title = "Países con menor concentración de fosfato en ríos",
     x = "Año",  
@@ -68,10 +68,10 @@ ggplot(minimo_fosfato, aes(x = factor(Año), y = Cantidad_Fosfato, fill = País)
   ) +
   theme_light() +
   theme(
-    axis.text.x = element_text(angle = 90, hjust = 1),  # 90 grados para etiquetas en el eje X
+    axis.text.x = element_text(angle = 90, hjust = 1),  
     axis.title.x = element_text(size = 14),
     axis.title.y = element_text(size = 14),
-    legend.position = "top"  # Ubicar la leyenda en la parte superior para que se vea con claridad
+    legend.position = "top" 
   )
 
 #-----------------------------------------------------------------------------------
@@ -88,13 +88,9 @@ View(fosfato_economia)
 
 ranking_noruega<-fosfato_economia%>%
   group_by(Año) %>%
-  # Crear el ranking dentro de cada año
   mutate(ranking_pib = rank(-PIB, ties.method = "min")) %>%
-  # Filtrar solo para Norway
   filter(País == "Norway") %>%
-  # Ordenar por año
   arrange(Año) %>%
-  # Seleccionar las columnas relevantes
   select(Año, PIB, ranking_pib,Cantidad_Fosfato) 
 View(ranking_noruega)
 
@@ -113,22 +109,19 @@ ranking_macedonia<-fosfato_economia%>%
   select(Año, PIB, ranking_pib,Cantidad_Fosfato) 
 View(ranking_macedonia)
 
-#Vamos a crear un gráfico para observar los cambios
 
-library(ggplot2)
-library(tidyr)
+#Grafico
 
 datos_combinados <- bind_rows(
   ranking_noruega %>% mutate(Pais = "Noruega"),
   ranking_macedonia %>% mutate(Pais = "Macedonia")
 )
-# Preparar los datos en formato largo
+
 datos_largo <- datos_combinados %>%
   pivot_longer(cols = c("Cantidad_Fosfato", "PIB"), 
                names_to = "Variable", 
                values_to = "Valor")
 
-# Crear el gráfico
 ggplot(datos_largo, aes(x = Año, y = Valor, color = Pais)) +
   geom_point(size=2) +
   geom_smooth(se = TRUE,alpha=0.15) +
