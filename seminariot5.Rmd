@@ -327,7 +327,7 @@ Se han recopilado datos del PIB en Europa a partir del año 2012. Del apartado a
 Para ello, se crea una tabla conjunta con la cantidad de fosfato y el PIB correspondiente.
 ```{r, echo=TRUE, message=FALSE, warning=FALSE}
 fosfato_economia <- Fosfato %>%
-  left_join(economia, by = c("País", "Año")) %>% # Al hacer este join, se mantienen todos los años de datos de ECONOMÍA, pero en los datos de fosfato, no hay valores para algunos años
+  left_join(economia, by = c("País", "Año")) %>% # Al hacer este join, se mantienen todos los años de datos de FOSFATO, pero en los datos de economía, no hay valores para algunos años
   filter(!is.na(PIB)) # Eliminamos las filas con NA en la columna PIB
 
 ```
