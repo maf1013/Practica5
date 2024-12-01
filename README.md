@@ -1,6 +1,6 @@
 # FOSFATO EN RÍOS, CÁNCER DE ESTÓMAGO Y ECONOMÍA
 
-![](INPUT/IMAGES/Logo_Universidad_Burgos.png){align="right" height="120"}
+<img src="INPUT/IMAGES/Logo_Universidad_Burgos.png" align="right" height="120"/>
 
 #### Carmen Albillos Gubia
 
@@ -28,5 +28,11 @@ En este proyecto se estudia la posible relación entre el ***cáncer de estómag
 6.  Relación del cáncer de estómago con la cantidad de fosfatos en ríos.
 
 ### CONCLUSIÓN FINAL
+Tras el análisis de datos y la realización de gráficas se ha concluido que, tanto la concentración de fosfatos en los ríos, como las tasas de cáncer de estómago en Europa, han disminuido con el tiempo.
+
+Estos datos sugieren la posibilidad de una relación entre ambos fenómenos. En este sentido, los fosfatos presentes en detergentes, fertilizantes y productos del sector industrial pueden terminar contaminando los ríos. Posteriormente, esta agua contaminada podría ser utilizada para riego en la agricultura, afectando a la cadena alimentaria y, en consecuencia, a la salud humana, particularmente en forma de problemas digestivos.
+
+En conclusión, el desarrollo de cáncer de estómago podría estar relacionado con la concentración de fosfatos en los ríos. Sin embargo, es importante destacar que el periodo de tiempo analizado (2006-2013) es relativamente limitado y no abarca años más recientes.
+Contar con datos más amplios y actualizados permitiría obtener conclusiones más precisas, especialmente considerando que en los últimos años se han implementado medidas más estrictas de protección ambiental, así como avances en técnicas y tratamientos para la prevención del cáncer.
 
 ### REFERENCIAS
