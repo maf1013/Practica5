@@ -1,5 +1,5 @@
 ---
-title: "Fosfato en ríos, cáncer de estómago y economía"
+title: "CÁNCER DE ESTÓMAGO, FOSFATO EN RÍOS Y ECONOMÍA"
 author: 
   - name: "María Acevedo Fernández"
   - name: "Carmen Albillos Gubia" 
@@ -27,7 +27,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Repositorio GitHub: <https://github.com/maf1013/Practica5.git>
 
-## 1. INTRODUCCIÓN
+## <span style="color:#4ba776">1. INTRODUCCIÓN</span>
 
 En este proyecto se estudia la posible relación entre el ***cáncer de estómago*** y la cantidad de ***fosfatos en ríos***. Además de cómo se ven influenciados por la ***economía*** de cada país Europeo. Para ello se ha recogido información sobre:
 
@@ -36,6 +36,12 @@ En este proyecto se estudia la posible relación entre el ***cáncer de estómag
 -   El número de casos de cáncer de estómago en Europa (año 2006 - año 2013)
 
 -   El PIB de cada país de Europa (año 2012 - año 2020)
+
+
+<div style="display: flex; justify-content: space-between;">
+  <img src="INPUT/IMAGES/cancer_estomago.jpg" width="45%" />
+  <img src="INPUT/IMAGES/medio_ambiente.jpg"  width="35%" />
+</div>
 
 ## 2. OBJETIVO GENERAL
 Con este estudio queremos determinar si la contaminación de los ríos producida por la presencia de fosfatos en sus aguas afecta a la salud humana, en este caso si puede influir en el desarrollo de cáncer de estómago. Por otro lado determinaremos si estas tasas se ven contribuidas por el desarrollo económico de cada país, estudiando su PIB (Producto Interior Bruto).
@@ -498,13 +504,7 @@ Esto se puede deber a varios factores:
 
 Además, podemos destacar otro factor que afecta considerablemente en el desarrollo de este cáncer, que es la edad,el cual afecta a ambos sexos.
 
- 5. ¿En los paises europeos más desarrollados y con mejor economía hay una menor tasa de cáncer de estómago?
 
-Según el Índice de Desarrollo Humano (IDH), los países más desarrollados en Europa son: - Noruega: 13.072 - Suiza: 11.68
-
-Sin embargo, entre los páises menos desarrollados se encuentra: - Ucrania: 33.36
-
-En este último país vemos que hay una incidencia de más del doble en comparación con los dos países primeros. Esto se debe a que en los países más desarrollados tienen una mejor calidad de vida, una estabilidad económica y financiera y eficientes servicios públicos, como es la sanidad. Por otro lado, en países no tan desarrollados como por ejemplo Ucrania, podemos ver una inestabilidad económica agravada por los conflictos políticos.
 
 ### 5.  Evolución de las tasas de cáncer de estómago a lo largo del tiempo.
 
