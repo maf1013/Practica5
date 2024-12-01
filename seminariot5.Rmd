@@ -251,7 +251,7 @@ DT::datatable(minimo_fosfato)
 
 ```
 
-Se concluye que el país con ***más*** cantidad de fosfatos e sus ríos es:
+El país que registrado una ***mayor*** cantidad de fosfato es:
 
 ```{r, echo = TRUE}
 pais_max <- Fosfato %>%
@@ -263,7 +263,7 @@ pais_max <- Fosfato %>%
 DT::datatable(pais_max)
 ```
 
-Se concluye que el país con ***menos*** cantidad de fosfatos e sus ríos es:
+El país que registrado una ***menor*** cantidad de fosfato es:
 
 ```{r, echo = TRUE}
 pais_min <- Fosfato %>%
