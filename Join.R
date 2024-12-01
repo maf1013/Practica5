@@ -30,15 +30,3 @@ ggplot(cancer_fosfato_long, aes(x = Año, y = Valor, color = Variable))+
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 
-# Crear el gráfico con dos facetas
-ggplot(cancer_fosfato_media_long, aes(x = Año, y = Valor, color = Variable)) +
-  geom_line() +  # Puedes usar geom_point() si prefieres puntos en lugar de líneas
-  geom_smooth(se = FALSE) +  # Línea de tendencia (opcional)
-  facet_wrap(~ Variable, scales = "free_y", nrow = 2) +  # Facetas separadas para cada variable
-  labs(
-    title = "Comparación de Casos de Cáncer y Cantidad de Fosfato",
-    x = "Año",
-    y = "Valor"
-  ) +
-  theme_minimal() +
-  theme(legend.position = "none")  # Eliminar la leyenda si no la necesitas
