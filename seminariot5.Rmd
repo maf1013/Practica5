@@ -1,57 +1,79 @@
 ---
 title: "Fosfato en ríos, cáncer de estómago y economía"
 author: 
-  - "María Acevedo Fernández"
-  - "Carmen Albillos Gubia"
-enlace a github [https://github.com/maf1013/Practica5]
+  - name: "María Acevedo Fernández"
+  - name: "Carmen Albillos Gubia" 
+url: [https://github.com/maf1013/Practica5]
 date: "`r Sys.Date()`"
-output: html_document
+output: 
+  html_document:
+    df_print: paged
+    theme: readable
+    toc: true
+    toc_float: true
+    toc_depth: 4
+  pdf_document:
+    toc: yes
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
+
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Repositorio GitHub: https://github.com/maf1013/Practica5.git 
+Repositorio GitHub: <https://github.com/maf1013/Practica5.git>
 
-## Introducción
-Repositorio creado y desarrollado por alumnas del grupo 102 de la asignatura "Fuentes de Datos Biomédicas y Web Semántica" del grado Ingeniería de la Salud, Universidad de Burgos.
+## 1. INTRODUCCIÓN
 
-En este proyecto se estudia la posible relación entre la cantidad de fosfatos en ríos y el cáncer de estómago. Para ello se ha recogido información sobre los mg de PO04 por litro en los ríos de Europa (2000-2021) y el número de casos de cáncer de estómago en Europa (2005-2013). 
+En este proyecto se estudia la posible relación entre el ***cáncer de estómago*** y la cantidad de ***fosfatos en ríos***. Además de cómo se ven influenciados por la ***economía*** de cada país Europeo. Para ello se ha recogido información sobre:
 
-##Carga paquetes
-###1. Library readr
+-   Los mg de PO04 por litro en los ríos de Europa (año 1992 - año 2021)
+
+-   El número de casos de cáncer de estómago en Europa (año 2006 - año 2013)
+
+-   El PIB de cada país de Europa (año 2012 - año 2020)
+
+## 2. OBJETIVO GENERAL
+Con este estudio queremos determinar si la contaminación de los ríos producida por la presencia de fosfatos en sus aguas afecta a la salud humana, en este caso si puede influir en el desarrollo de cáncer de estómago. Por otro lado determinaremos si estas tasas se ven contribuidas por el desarrollo económico de cada país, estudiando su PIB (Producto Interior Bruto).
+
+## 3. OBJETIVOS ESPECÍFICOS
+
+### CARGA DE PAQUETES: 
+
 ```{r,message=FALSE, warning=FALSE}
 library(readr)
-```
-###2. Library dplyr
-```{r,message=FALSE, warning=FALSE}
 library(dplyr)
-```
-###3. Library tidyverse
-```{r,message=FALSE, warning=FALSE}
 library(tidyverse)
-```
-###4. Library ggplot2
-```{r,message=FALSE, warning=FALSE}
 library(ggplot2)
 ```
 
-##Carga de datos
-###1. Fosfato
-```{r}
+
+### CARGA DE DATOS:
+Fosfatos en ríos en Europa desde el año 2000 hasta el 2021
+```{r, message=FALSE, warning=FALSE, include=TRUE}
 Fosfato <- read_csv("INPUT/DATA/fosfato.csv") %>%
   select(-`Period:text`) %>%  #Se eliminina una columna que estaba llena de texto innecesario                           
   rename(País = `Country:text`,                           
          Año = `Year:year`,         #Se renombran las columnas               
-         Fosfato = colnames(.)[3]) %>%   #El nombre de la tercera columna mg P/I:number se sustituye por Fosfato         
-  arrange(País)   # Ordena la tabla por orden alfabético de País
+         Cantidad_Fosfato = colnames(.)[3]) %>%   #El nombre de la tercera columna mg P/I:number se sustituye por Cantidad_Fosfato   
+  arrange(País, Año)%>%   # Ordena la tabla por orden alfabético de País
+  group_by(País, Año)%>%
+  summarise(Cantidad_Fosfato = mean(Cantidad_Fosfato, na.rm = TRUE), .groups = "drop")
+  #En algunos países habia dos datos distintos por cada año, por lo que decidimos hacer la media.
+
+```
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+DT::datatable(Fosfato)
+
 ```
 
+Cáncer de estómago en Europa desde el año 2006 al 2013
 
-###2. Cáncer de estómago
-
-```{r}
+```{r, message=FALSE, warning=FALSE, include=TRUE}
 # Se carga el archivo usando comillas como delimitador
 cancer_estomago <- read_delim("INPUT/DATA/cancer_estomago.csv", delim = "\"", 
                               escape_backslash = TRUE, escape_double = FALSE, trim_ws = TRUE) %>%
@@ -60,13 +82,14 @@ cancer_estomago <- read_delim("INPUT/DATA/cancer_estomago.csv", delim = "\"",
   # La columna contiene los valores de varios años, por lo que usamos separate() para dividirla
   separate(
     col = c(`,2005,2006,2007,2008,2009,2010,2011,2012,2013,`), #La columna que contiene los años
-    into = paste0("Año_", 2005:2013), #Nombres de las nuevas columnas (Año_2005, Año_2006, ..., Año_2013)
+    #into = paste0("Año_", 2005:2013), #Nombres de las nuevas columnas (Año_2005, Año_2006, ..., Año_2013)
+    into = as.character(2005:2013),
     sep = "," #Delimitador para separar los valores
   ) %>%
   
   # Elimina columnas innecesarias
   select(-`Indicator,`, -`...1`, -`...3`, -`...5`, -`,...6`, -`...7`, -`...9`,
-         -`,...10`, -`...11`, -`...13`, -`,...14`, -`...15`, -`...17`, -`...19`, -`Año_2005`,
+         -`,...10`, -`...11`, -`...13`, -`,...14`, -`...15`, -`...17`, -`...19`, -`2005`,
          -`Cancer`,  -`Age Group`) %>%
   
   # Elimina filas que están llenas de valores nulos
@@ -77,59 +100,64 @@ cancer_estomago <- read_delim("INPUT/DATA/cancer_estomago.csv", delim = "\"",
   rename(Sexo = Sex) %>%
   
   # Convertir columnas anchas en formato largo para poder trabajar mejor los datos próximamente
-  pivot_longer(cols = c(`Año_2006`:`Año_2013`), names_to = "Año", values_to = "Casos") %>%
+  pivot_longer(cols = c(`2006`:`2013`), names_to = "Año", values_to = "Casos") %>%
+  
+  mutate(Año = as.numeric(Año)) %>%
   
   # Se crea una nueva columna País basada en los prefijos de Pais_Ciudad. 
   mutate(
-    Pais = case_when(
+    País = case_when(
       str_starts(Pais_Ciudad, "AT") ~ "Austria",
-      str_starts(Pais_Ciudad, "BE") ~ "Bélgica",
+      str_starts(Pais_Ciudad, "BE") ~ "Belgium",
       str_starts(Pais_Ciudad, "BG") ~ "Bulgaria",
-      str_starts(Pais_Ciudad, "CH") ~ "Suiza",
-      str_starts(Pais_Ciudad, "DE") ~ "Alemania",
-      str_starts(Pais_Ciudad, "DK") ~ "Dinamarca",
+      str_starts(Pais_Ciudad, "CH") ~ "Switzerland",
+      str_starts(Pais_Ciudad, "DE") ~ "Germany",
+      str_starts(Pais_Ciudad, "DK") ~ "Denmark",
       str_starts(Pais_Ciudad, "EE") ~ "Estonia",
-      str_starts(Pais_Ciudad, "ES") ~ "España",
-      str_starts(Pais_Ciudad, "FR") ~ "Francia",
-      str_starts(Pais_Ciudad, "HR") ~ "Croacia",
-      str_starts(Pais_Ciudad, "IE") ~ "Irlanda",
-      str_starts(Pais_Ciudad, "IS") ~ "Islandia",
-      str_starts(Pais_Ciudad, "IT") ~ "Italia",
-      str_starts(Pais_Ciudad, "LT") ~ "Lituania",
+      str_starts(Pais_Ciudad, "ES") ~ "Spain",
+      str_starts(Pais_Ciudad, "FR") ~ "France",
+      str_starts(Pais_Ciudad, "HR") ~ "Croatia",
+      str_starts(Pais_Ciudad, "IE") ~ "Ireland",
+      str_starts(Pais_Ciudad, "IS") ~ "Iceland",
+      str_starts(Pais_Ciudad, "IT") ~ "Italy",
+      str_starts(Pais_Ciudad, "LT") ~ "Lithuania",
       str_starts(Pais_Ciudad, "MT") ~ "Malta",
-      str_starts(Pais_Ciudad, "NL") ~ "Holanda",
-      str_starts(Pais_Ciudad, "NO") ~ "Noruega",
-      str_starts(Pais_Ciudad, "PL") ~ "Polonia",
+      str_starts(Pais_Ciudad, "NL") ~ "Holland",
+      str_starts(Pais_Ciudad, "NO") ~ "Norway",
+      str_starts(Pais_Ciudad, "PL") ~ "Poland",
       str_starts(Pais_Ciudad, "PT") ~ "Portugal",
-      str_starts(Pais_Ciudad, "RO") ~ "Rumania",
+      str_starts(Pais_Ciudad, "RO") ~ "Romania",
       str_starts(Pais_Ciudad, "RS") ~ "Serbia",
-      str_starts(Pais_Ciudad, "SI") ~ "Eslovenia",
-      str_starts(Pais_Ciudad, "SK") ~ "Eslovaquia",
-      str_starts(Pais_Ciudad, "UA") ~ "Ucrania",
-      str_starts(Pais_Ciudad, "UK") ~ "Reino Unido"
+      str_starts(Pais_Ciudad, "SI") ~ "Slovenia",
+      str_starts(Pais_Ciudad, "SK") ~ "Slovakia",
+      str_starts(Pais_Ciudad, "UA") ~ "Ukraine",
+      str_starts(Pais_Ciudad, "UK") ~ "United Kingdom"
     )
   ) %>%
   
   # Después de haber creado la nueva columna País, se elimina País_Ciudad porque ya no nos interesa
   select(-Pais_Ciudad) %>%
-  relocate(Pais, Año, Sexo, Casos) %>%
+  relocate(País, Año, Sexo, Casos) %>%
   #Convertir los valores de la columna Casos a numéricos
   mutate(Casos = as.numeric(Casos)) %>%
   
-  # Agrupar los datos por "Pais", "Año" y "Sexo", y luego calcular la suma de los casos por grupo
-  group_by(Pais, Año, Sexo) %>%
+  # Agrupar los datos por "País", "Año" y "Sexo", y luego calcular la suma de los casos por grupo
+  group_by(País, Año, Sexo) %>%
   summarise(Casos = sum(Casos, na.rm = TRUE), .groups = "drop") 
   #Con .groups=drop se consigue que se devuelvan los resultados sin estar agrupados por las variables País, Año y Sexo
   #Esto es necesario para conseguir que los datos sean la suma de un país entero y no aparezcan 
   #agrupados por regiones.
 ```
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+DT::datatable(cancer_estomago)
+
+```
 
 
-###3. Economía 
-```{r}
-economia <- read_csv("INPUT/DATA/economia.csv")
+Economía en Europa desde el año 2012 al 2020
 
-economia<-economia%>%
+```{r, message=FALSE, warning = FALSE, include=TRUE}
+economia <- read_csv("INPUT/DATA/economia.csv")%>%
   select(-c(1, 2, 3, 4, 5,9))%>%   #se eliminan columnas innecesarias 
   slice(-c(178:189),-c(118:141))%>% #Se eliminan las filas innecesarias
   rename(País=geo,
@@ -137,50 +165,136 @@ economia<-economia%>%
          PIB=OBS_VALUE)
 ```
 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+DT::datatable(economia)
+
+```
 
 
+### 1. Evolución del fosfato en ríos a lo largo de los años.
 
-## Objetivos y preguntas
-#### 1. La evolución del fosfato en rios (Comparando la toma de datos del primer año con el último.) 
-Debido a la regulación de productos químicos y detergentes, la mejora en el tratamiento de aguas residuales, las prácticas agrícolas sostenibles y la directiva del marco de la UE se nota un descenso general en los niveles de fosfato de los ríos de Europa desde el año 2000 al año 2021.
-El promedio de niveles de fosfato de todos los ríos de Europa en el año 2000 es de 0,102672727 y en el año 2021 es de 0,066486364. Sin embargo, hay países que no cumplen esta regla como es el caso de España, en el año 2000 la concentración de fosfato en ríos era de 0,113 y el 2021 de 0,199.
+Vamos a comparar como evoluciona la cantidad de fosfato en los ríos a lo largo del tiempo, es decir desde el año 1992 hasta el año 2021.
+Para hacer esta comparación global se hará una media de la cantidad de fosfatos en ríos por año de todos los países participantes en el estudio.
 
-#### 2. País en Europa con más fosfato en ríos
+#### 1.1. Metodología y resultados
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+promedio_fosfato_por_año <- Fosfato %>%
+  group_by(Año) %>%                    # Agrupa los datos por el año
+  summarise(Promedio_Fosfato = mean(Cantidad_Fosfato, na.rm = TRUE)) # Calcula el promedio de fosfato para cada año
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+DT::datatable(promedio_fosfato_por_año)
+
+```
+
+Vamos a visualizar mejor estos datos con un gráfico:
+
+```{r, echo=TRUE}
+grafico_fosfato_años<-ggplot(data=promedio_fosfato_por_año, aes(x=Año,y=Promedio_Fosfato))+
+                 geom_point(na.rm=TRUE, colour="deeppink")+
+                 geom_smooth(na.rm=TRUE)+
+                 labs(title="Evolución de fosfato en ríos ",
+                      x="Años",
+                      y="Fosfato en ríos")+
+    scale_x_continuous(breaks = seq(min(promedio_fosfato_por_año$Año), max(promedio_fosfato_por_año$Año)))+
+
+                 theme_light()+
+                 theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+
+plot(grafico_fosfato_años)
+```
+
+#### 1.2. Conclusiones
+
+Debido a la regulación de productos químicos y detergentes, la mejora en el tratamiento de aguas residuales, las prácticas agrícolas sostenibles y la directiva del marco de la UE se nota un descenso general en los niveles de fosfato de los ríos de Europa desde el año 2000 al año 2021. Esta tendencia la podemos ver en la gráfica.\n
+Por otro lado, el año en el que se empezó el estudio, año 1992, tenía 0.13035 mg de PO04 por litro. Sin embargo, el último año del que tenemos datos, es decir, año 2018, hay 0.0859 mg de PO04 por litro. Afirmando un notable descenso. 
+
+### 2. Cantidad de fosfato en los distintos ríos de los paises europeos.
+
+A continuación vamos a agrupar los datos por años y determinaremos cuales fueron los paises europeos con más cantidades de fosfato por año.
+#### 2.1 Metodología y resultados
+```{r, echo = TRUE}
+maximo_fosfato<- Fosfato%>%
+  group_by(Año) %>%  # Agrupar los datos por Año
+  filter(Cantidad_Fosfato == max(Cantidad_Fosfato)) %>%
+  arrange(Año)
+```
+
+```{r, echo = FALSE}
+DT::datatable(maximo_fosfato)
+```
+Podemos determinar que el país con ***más*** cantidad de fosfatos e sus ríos es:
+
+```{r, echo = TRUE}
+pais_max <- Fosfato %>%
+  arrange(desc(Cantidad_Fosfato))%>%
+  slice_head()
+```
+
+```{r, echo = FALSE}
+DT::datatable(pais_max)
+```
+
+Podemos determinar que el país con ***menos*** cantidad de fosfatos e sus ríos es:
+
+```{r, echo = TRUE}
+pais_min <- Fosfato %>%
+  arrange(Cantidad_Fosfato)%>%
+  slice_head()
+```
+
+```{r, echo = FALSE}
+DT::datatable(pais_min)
+```
+
+A continuación realizaremos una gráfica donde podremos observar que a lo largo del tiempo,los países con más cantidad de fosfato en su ríos, son Bélgica, Bulgaria, Macedonia del Norte y Reino Unido. 
+
+```{r, echo=TRUE}
+grafico_paises_fosfato <- ggplot(maximo_fosfato, aes(x = factor(Año), y = Cantidad_Fosfato)) +
+  geom_bar(aes(fill = País),stat = "identity") + 
+  labs( title = "País con mayor concentración de fosfato en ríos",
+        x = "País",
+        y = "Concentración de Fosfato") +
+  theme_light()+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+```{r, echo =FALSE}
+plot(grafico_paises_fosfato)
+```
+
+#### 2.2 Conclusiones
+
 En los años 2000, 2002, 2003, 2004 y 2012, Serbia registró los niveles más altos de fosfato en sus ríos, mientras que en el resto de los años fue el Norte de Macedonia quien reportó los peores datos. Al comparar estos niveles con los de países como Noruega, la diferencia es notable: por ejemplo, en el año 2000, el Norte de Macedonia alcanzó 0,4731 mg de PO₄ por litro, mientras que Noruega registró solo 0,004 mg de PO₄/L.
 
 Esta diferencia se debe a que países más desarrollados, como Noruega y Finlandia, tienen un PIB per cápita mucho más alto, lo que les permite invertir en sistemas avanzados de agua y saneamiento. Estos sistemas están altamente desarrollados y son muy eficientes en el tratamiento de aguas residuales, reduciendo significativamente los niveles de fosfato en sus ríos.
 
 #### 3. ¿El cancer de estómago se ve influenciado por el sexo de los pacientes?
-Podemos concluir que los hombres tienen un mayor predisposición a sufrir cáncer de estómago que las mujeres. Podemos tomar varios países de ejemplo para observar esta relación calculando el promedio de los datos de todos los años presentes:
-  - En Austria (AT) los hombres tienen una incidencia de 25,53, sin embargo las mujeres tienen una incidencia de 13,51
-  - En Dinamarca (DK) los hombres tienen una incidencia de 16,44, sin embargo las mujeres tienen una incidencia de 6,95
-  En ambos paises podemos observar como el riesgo a cancer de estómago en el sexo masculino es aproximadamente el doble que en el sexo femenino.
-  
-Esto se debe a varios factores:
-  - Factores hormonales: El estrógeno es una hormona femenina que tiene un efecto protector contar el cáncer gástrico, por lo que las mujeres premenopúsicas son las que menos riesgo tienen de sufrirlo, ya que son las personas con niveles más altos de esta hormona
-  - Infección por Helicobacter Pylori: esta bacteria es una de las causas principales de cáncer de estómago. Y aunque la tasa de infección es similar para ambos sexos, el desarrollo de cáncer a partri de esta infección es más común en los hombres.
-  - Estilo de vida: según las estadísticas los hombres tienden a un mayor consumo de tabaco y alcohol, factores de riesgo para el desarrollo de cáncer de estómago.
+
+Podemos concluir que los hombres tienen un mayor predisposición a sufrir cáncer de estómago que las mujeres. Podemos tomar varios países de ejemplo para observar esta relación calculando el promedio de los datos de todos los años presentes: - En Austria (AT) los hombres tienen una incidencia de 25,53, sin embargo las mujeres tienen una incidencia de 13,51 - En Dinamarca (DK) los hombres tienen una incidencia de 16,44, sin embargo las mujeres tienen una incidencia de 6,95 En ambos paises podemos observar como el riesgo a cancer de estómago en el sexo masculino es aproximadamente el doble que en el sexo femenino.
+
+Esto se debe a varios factores: - Factores hormonales: El estrógeno es una hormona femenina que tiene un efecto protector contar el cáncer gástrico, por lo que las mujeres premenopúsicas son las que menos riesgo tienen de sufrirlo, ya que son las personas con niveles más altos de esta hormona - Infección por Helicobacter Pylori: esta bacteria es una de las causas principales de cáncer de estómago. Y aunque la tasa de infección es similar para ambos sexos, el desarrollo de cáncer a partri de esta infección es más común en los hombres. - Estilo de vida: según las estadísticas los hombres tienden a un mayor consumo de tabaco y alcohol, factores de riesgo para el desarrollo de cáncer de estómago.
 
 Además podemos destacar que otro factor que afecta considerablemente en el desarrollo de este cáncer es la edad, que afecta a ambos sexos.
 
 #### 4. ¿En los paises europeos más desarrollados y con mejor economía hay una menor tasa de cáncer de estómago?
-Según el Índice de Desarrollo Humano (IDH), los países más desarrollados en Europa son:
-- Noruega: 13.072
-- Suiza: 11.68
 
-Sin embargo, entre los páises menos desarrollados se encuentra:
-- Ucrania: 33.36
+Según el Índice de Desarrollo Humano (IDH), los países más desarrollados en Europa son: - Noruega: 13.072 - Suiza: 11.68
 
-En este último país vemos que hay una incidencia de más del doble en comparación con los dos países primeros. 
-Esto se  debe a que en los países más desarrollados tienen una mejor calidad de vida, una estabilidad económica y financiera y eficientes servicios públicos, como es la sanidad.
-Por otro lado, en países no tan desarrollados como por ejemplo Ucrania, podemos ver una inestabilidad económica agravada por los conflictos políticos.
+Sin embargo, entre los páises menos desarrollados se encuentra: - Ucrania: 33.36
+
+En este último país vemos que hay una incidencia de más del doble en comparación con los dos países primeros. Esto se debe a que en los países más desarrollados tienen una mejor calidad de vida, una estabilidad económica y financiera y eficientes servicios públicos, como es la sanidad. Por otro lado, en países no tan desarrollados como por ejemplo Ucrania, podemos ver una inestabilidad económica agravada por los conflictos políticos.
 
 #### 5. ¿Las tasas de cáncer de estómago han aumentado o disminuido con el tiempo?
-En todos los países podemos ver que la incidencia se ha mantenido costante pero tiende ha disminuir
-Esto se puede deber a mejoras en la dieta, mejoras en el estilo de vida y mejoras de sistemas de detección y tratamientos de cáncer entre otros.
+
+En todos los países podemos ver que la incidencia se ha mantenido costante pero tiende ha disminuir Esto se puede deber a mejoras en la dieta, mejoras en el estilo de vida y mejoras de sistemas de detección y tratamientos de cáncer entre otros.
 
 #### 6. ¿El cáncer de estómago está relacionado con la cantidad de fosfatos en ríos?
-Como ya hemos analizado anteriormente tanto la cantidad de fosfatos en ríos como las tasas de cáncer de estómago en Europa, han disminuido con el paso de los años.
-Con estos resultados podemos pensar que existe una pequeña relación entre estos dos aspectos. Es decir, que los fosfatos que se encuentran en detergentes y fertilizantes pueden llegar a los rios dando lugar a una contaminación ambiental, y posteriormente ese agua podrá ser usado para regar en la agricultura, teniendo un impacto en la cadena alimentaria y por lo tanto en la salud humana.
 
-
+Como ya hemos analizado anteriormente tanto la cantidad de fosfatos en ríos como las tasas de cáncer de estómago en Europa, han disminuido con el paso de los años. Con estos resultados podemos pensar que existe una pequeña relación entre estos dos aspectos. Es decir, que los fosfatos que se encuentran en detergentes y fertilizantes pueden llegar a los rios dando lugar a una contaminación ambiental, y posteriormente ese agua podrá ser usado para regar en la agricultura, teniendo un impacto en la cadena alimentaria y por lo tanto en la salud humana.

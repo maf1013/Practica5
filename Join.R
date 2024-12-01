@@ -22,7 +22,7 @@ ggplot(cancer_fosfato_long, aes(x = Año, y = Valor, color = Variable))+
   geom_point()+
   geom_smooth(se = TRUE)+
   facet_wrap(~ Variable, scales = "free_y", nrow = 2)+
-  labs(title = "Relación de Cáncer de estómago y \n Fosfatos en Ríos a lo largo del tiempo",
+  labs(title = "Evolución del Cáncer de estómago y \n del Fosfatos en Ríos a lo largo del tiempo",
        x = "Año",
        y = "Valor")+
   scale_x_continuous(breaks = seq(min(cancer_fosfato_long$Año), max(cancer_fosfato_long$Año)))+

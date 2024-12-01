@@ -14,7 +14,7 @@ View(promedio_fosfato_por_año)
 #Se alcanzó el menor nivel de fosfato en ríos en el año 2010.
 
 #Generar gráfica para estudiar la evolución de los fosfatos en Europa 
-grafico_fosfato<-ggplot(data=promedio_fosfato_por_año, aes(x=Año,y=promedio_fosfato))+
+grafico_fosfato<-ggplot(data=promedio_fosfato_por_año, aes(x=Año,y=Promedio_Fosfato))+
                  geom_point(na.rm=TRUE, colour="deeppink")+
                  geom_smooth(na.rm=TRUE)+
                  labs(title="Evolución de fosfato en ríos ",
@@ -32,6 +32,16 @@ maximo_fosfato<- Fosfato%>%
 
 View(maximo_fosfato)
 
+#PAÍS CON MÁS FOSFATO
+pais_max <- Fosfato %>%
+  arrange(desc(Cantidad_Fosfato))%>%
+  slice_head()
+pais_max
+#PAÍS CON MENOS FOSFATO
+pais_min <- Fosfato %>%
+  arrange(Cantidad_Fosfato)%>%
+  slice_head()
+pais_min
 
 #Se realiza un diagrama de barras con los paises que tienen más fosfato
 
@@ -72,23 +82,34 @@ mayor_PIB<-fosfato_economia%>%
   filter(PIB == max(PIB)) %>%
   arrange(Año)
 View(mayor_PIB)
-  
-library(ggplot2)
-library(tidyr)
+
+
+
+
+
+fosfato_economia_media <- fosfato_economia %>%
+  group_by(Año) %>%
+  summarise(Cantidad_Fosfato = mean(Cantidad_Fosfato, na.rm = TRUE),
+            PIB = mean(PIB, na.rm = TRUE))
+
 
 # Transformar los datos a formato largo para tener una columna común que distinga entre Fosfato y PIB
-fosfato_economia_long <- fosfato_economia %>%
+fosfato_economia_long <- fosfato_economia_media %>%
   pivot_longer(cols = c("Cantidad_Fosfato", "PIB"), 
                names_to = "Variable", 
                values_to = "Valor")
 
-# Crear el gráfico con facetas para Fosfato y PIB a lo largo del tiempo en una columna y dos filas
-ggplot(fosfato_economia_long, aes(x = Año, y = Valor)) +
-  geom_smooth(aes(color = Variable), method = "loess") +  # Línea de suavizado (tendencia) para cada variable
-  geom_point(aes(color = Variable)) +  # Puntos para cada variable
-  labs(title = "Evolución de Fosfato y PIB a lo largo del tiempo",
+
+ggplot(fosfato_economia_long, aes(x = Año, y = Valor, color = Variable))+
+  geom_point()+
+  geom_smooth(se = TRUE)+
+  facet_wrap(~ Variable, scales = "free_y", nrow = 2)+
+  labs(title = "Evolución fosfatos en ríos y \n PIB a lo largo del tiempo",
        x = "Año",
-       y = "Valor") +
-  facet_wrap(~ Variable, scales = "free_y", nrow = 2) +  # Facetas en 2 filas
-  scale_x_continuous(breaks = unique(fosfato_economia$Año)) +
-  theme_light() 
+       y = "Valor")+
+  scale_x_continuous(breaks = seq(min(fosfato_economia_long$Año), max(fosfato_economia_long$Año)))+
+  theme_light()+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+

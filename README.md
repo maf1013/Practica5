@@ -10,9 +10,9 @@
 
 Repositorio creado y desarrollado por alumnas del grupo 102 de la asignatura "Fuentes de Datos Biomédicas y Web Semántica", del grado Ingeniería de la Salud, Universidad de Burgos.
 
-En este proyecto se estudia la posible relación entre el ***cáncer de estómago*** y la cantidad de ***fosfatos en ríos***. Además de cómo se ven influnenciados por la ***economía*** de cada país Europeo. Para ello se ha recogido información sobre:
+En este proyecto se estudia la posible relación entre el ***cáncer de estómago*** y la cantidad de ***fosfatos en ríos***. Además de cómo se ven influenciados por la ***economía*** de cada país Europeo. Para ello se ha recogido información sobre:
 
--   Los mg de PO04 por litro en los ríos de Europa (año 2000 - año 2021)
+-   Los mg de PO04 por litro en los ríos de Europa (año 1992 - año 2021)
 
 -   El número de casos de cáncer de estómago en Europa (año 2006 - año 2013)
 

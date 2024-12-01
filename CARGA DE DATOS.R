@@ -93,7 +93,11 @@ Fosfato <- read_csv("INPUT/DATA/fosfato.csv") %>%
   rename(País = `Country:text`,                           
          Año = `Year:year`,         #Se renombran las columnas               
          Cantidad_Fosfato = colnames(.)[3]) %>%   #El nombre de la tercera columna mg P/I:number se sustituye por Fosfato   
-  arrange(País, Año)   # Ordena la tabla por orden alfabético de País
+  arrange(País, Año)%>%   # Ordena la tabla por orden alfabético de País
+  group_by(País, Año)%>%
+  summarise(Cantidad_Fosfato = mean(Cantidad_Fosfato, na.rm = TRUE), .groups = "drop")
+  #En algunos países habia dos datos distintos por cada año, por lo que decidimos hacer la media.
+
 View(Fosfato)
 
 ###############################################################################################
