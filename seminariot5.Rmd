@@ -218,6 +218,7 @@ Sin embargo, el ligero aumento después de 2010 que podría deberse a factores c
 ### 2. Cantidad de fosfato en los distintos ríos de los paises europeos.
 
 A continuación se agruparán los datos por años para determinar cuáles han sido los países europeos con más cantidades de fosfato.
+
 #### 2.1 Metodología y resultados
 ```{r, echo = TRUE}
 maximo_fosfato<- Fosfato%>%
@@ -229,6 +230,24 @@ maximo_fosfato<- Fosfato%>%
 ```{r, echo = FALSE}
 DT::datatable(maximo_fosfato)
 ```
+También se calculan los países europeos con menos cantidades de fosfato.
+```{r, echo = TRUE}
+minimo_fosfato<- Fosfato%>%
+  group_by(Año) %>%  # Agrupar los datos por Año
+  filter(Cantidad_Fosfato == min(Cantidad_Fosfato)) %>%
+  arrange(Año)
+```
+
+```{r, echo = FALSE}
+DT::datatable(minimo_fosfato)
+
+```
+
+
+
+
+
+
 Se concluye que el país con ***más*** cantidad de fosfatos e sus ríos es:
 
 ```{r, echo = TRUE}
@@ -241,7 +260,7 @@ pais_max <- Fosfato %>%
 DT::datatable(pais_max)
 ```
 
- Se concluye que el país con ***menos*** cantidad de fosfatos e sus ríos es:
+Se concluye que el país con ***menos*** cantidad de fosfatos e sus ríos es:
 
 ```{r, echo = TRUE}
 pais_min <- Fosfato %>%
@@ -293,9 +312,126 @@ plot(grafico_menor_fosfato)
 
 #### 2.2 Conclusiones
 Se observa una clara variabilidad en los niveles de fosfato de los ríos europeos según el país. **Noruega** presenta las concentraciones más bajas de fosfato, alcanzando un mínimo histórico de 0.001 mg/L en 2003. En cambio Bélgica, Reino Unido, Bulgaria y Macedonia del Norte registran los niveles más altos, destacando especialmente **Macedonia del Norte** en 2014, con una alarmante concentración de fosfato de 1.053 mg/L.
-¿Se podrían deber estas diferencias a los distintos niveles económicos? Se estudiará a continuación.
+¿Se podrían deber estas diferencias a los distintos niveles económicos de cada país? Se estudiará a continuación.
 
-#### 3. ¿El cancer de estómago se ve influenciado por el sexo de los pacientes?
+
+### 3. Relación del PIB de Europa con la cantidad de fosfato en ríos.
+
+Se han recopilado datos del PIB en Europa a partir del año 2012. Del apartado anterior se ha concluido que el país con menos fosfato a partir de 2012 es Noruega, y el que más el Norte de Macedonia. Se compararán los PIBs de ambos países y sus niveles de fosfato para estudiar si hay una posible relación.
+Para ello, se crea una tabla conjunta con la cantidad de fosfato y el PIB correspondiente.
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+fosfato_economia <- Fosfato %>%
+  left_join(economia, by = c("País", "Año")) %>% # Al hacer este join, se mantienen todos los años de datos de ECONOMÍA, pero en los datos de fosfato, no hay valores para algunos años
+  filter(!is.na(PIB)) # Eliminamos las filas con NA en la columna PIB
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+DT::datatable(fosfato_economia)
+```
+
+
+
+#### 3.1 Metodología y resultados
+
+El estudio se centrará solamente en Noruega y Macedonia del Norte. 
+Se estudiará qué ranking ocupa el PIB de Noruega respecto del resto de países para cada año.
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+ranking_noruega<-fosfato_economia%>%
+  group_by(Año) %>%
+  # Crea el ranking para cada año
+  mutate(ranking_pib = rank(-PIB, ties.method = "min")) %>% # se calcula el #ranking para la columna PIB (-) en la que el mayor valor del PIB reciba el puesto #número uno. Con ties.method="min" se asigna el mismo ranking a dos valores #empatados.
+  filter(País == "Norway") %>%
+  arrange(Año) %>%
+  select(Año, PIB, ranking_pib,Cantidad_Fosfato) 
+
+```
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+DT::datatable(ranking_noruega)
+
+```
+
+Ahora se estudiará el ranking para el PIB del Norte de Macedonia
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+ranking_macedonia<-fosfato_economia%>%
+  group_by(Año) %>%
+  # Crear el ranking dentro de cada año
+  mutate(ranking_pib = rank(-PIB, ties.method = "min")) %>%
+  # Filtrar solo para Norway
+  filter(País == "North Macedonia") %>%
+  # Ordenar por año
+  arrange(Año) %>%
+  # Seleccionar las columnas relevantes
+  select(Año, PIB, ranking_pib,Cantidad_Fosfato) 
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+DT::datatable(ranking_macedonia)
+
+```
+
+Se realiza una gráfica para poder estudiar mejor la posible relación:
+
+
+```{r, echo=TRUE}
+#En un solo data frame, combina los datos de Noruega y Macedonia del Norte, añadiendo la columna "Pais"
+datos_combinados <- bind_rows(
+  ranking_noruega %>% mutate(Pais = "Noruega"),
+  ranking_macedonia %>% mutate(Pais = "Macedonia")
+)
+
+datos_largo <- datos_combinados %>%
+  pivot_longer(cols = c("Cantidad_Fosfato", "PIB"), 
+               names_to = "Variable", 
+               values_to = "Valor")
+
+#Se crea un gráfico de dispersión con líneas de tendencia para fosfato y PIB
+grafico_pib_fosfato<-ggplot(datos_largo, aes(x = Año, y = Valor, color = Pais)) +
+  geom_point(size=2) +
+  geom_smooth(se = TRUE,alpha=0.15) +
+  facet_wrap(~ Variable, scales = "free_y", nrow = 2) +
+  labs(title = "Evolución fosfatos en ríos y \n PIB a lo largo del tiempo",
+       x = "Año",
+       y = "Valor") +
+  scale_x_continuous(breaks = seq(min(datos_largo$Año), max(datos_largo$Año))) +
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+```{r, echo =FALSE}
+plot(grafico_pib_fosfato)
+```
+
+#### 3.2 Conclusiones 
+
+Al analizar los datos de **Noruega**, se observa que, a pesar de que su PIB experimenta una caída significativa en el ranking, pasando del puesto 4 al 25, la cantidad de fosfato en sus ríos apenas muestra variaciones.
+
+En el caso de **Macedonia del Norte**, aunque su posición en el ranking del PIB mejora considerablemente de un año a otro, pasando del puesto 20 en **2012** al puesto 3 en **2013**, la cantidad de fosfato en sus ríos aumenta de manera significativa en un 120%.
+
+Si además tenemos en cuenta la gráfica, en la que, a pesar de las diferencias del PIB, la cantidad de fosfato no sigue el patrón esperado (es decir, que el fosfato disminuya cuando el PIB sube y aumente cuando el PIB baja), concluimos que, en este caso, parece no existir una relación directa entre el PIB y la cantidad de fosfato.
+
+La diferencia entre el PIB y los niveles de fosfato podría ser el resultado de políticas medioambientales más débiles. Aunque el PIB de un país pueda mejorar, como en el caso de Macedonia del Norte, esto no garantiza necesariamente una gestión ambiental adecuada. En cambio, Noruega se conoce por contar con políticas ambientales más rigurosas y un mayor nivel de conciencia pública sobre la sostenibilidad, lo que podría contribuir a mantener los niveles de fosfato más bajos en sus ríos en comparación con el resto de Europa.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### 4. ¿El cancer de estómago se ve influenciado por el sexo de los pacientes?
 
 Podemos concluir que los hombres tienen un mayor predisposición a sufrir cáncer de estómago que las mujeres. Podemos tomar varios países de ejemplo para observar esta relación calculando el promedio de los datos de todos los años presentes: - En Austria (AT) los hombres tienen una incidencia de 25,53, sin embargo las mujeres tienen una incidencia de 13,51 - En Dinamarca (DK) los hombres tienen una incidencia de 16,44, sin embargo las mujeres tienen una incidencia de 6,95 En ambos paises podemos observar como el riesgo a cancer de estómago en el sexo masculino es aproximadamente el doble que en el sexo femenino.
 
@@ -303,7 +439,7 @@ Esto se debe a varios factores: - Factores hormonales: El estrógeno es una horm
 
 Además podemos destacar que otro factor que afecta considerablemente en el desarrollo de este cáncer es la edad, que afecta a ambos sexos.
 
-#### 4. ¿En los paises europeos más desarrollados y con mejor economía hay una menor tasa de cáncer de estómago?
+### 5. ¿En los paises europeos más desarrollados y con mejor economía hay una menor tasa de cáncer de estómago?
 
 Según el Índice de Desarrollo Humano (IDH), los países más desarrollados en Europa son: - Noruega: 13.072 - Suiza: 11.68
 
@@ -311,16 +447,16 @@ Sin embargo, entre los páises menos desarrollados se encuentra: - Ucrania: 33.3
 
 En este último país vemos que hay una incidencia de más del doble en comparación con los dos países primeros. Esto se debe a que en los países más desarrollados tienen una mejor calidad de vida, una estabilidad económica y financiera y eficientes servicios públicos, como es la sanidad. Por otro lado, en países no tan desarrollados como por ejemplo Ucrania, podemos ver una inestabilidad económica agravada por los conflictos políticos.
 
-#### 5. ¿Las tasas de cáncer de estómago han aumentado o disminuido con el tiempo?
+### 6. ¿Las tasas de cáncer de estómago han aumentado o disminuido con el tiempo?
 
 En todos los países podemos ver que la incidencia se ha mantenido costante pero tiende ha disminuir Esto se puede deber a mejoras en la dieta, mejoras en el estilo de vida y mejoras de sistemas de detección y tratamientos de cáncer entre otros.
 
-#### 6. ¿El cáncer de estómago está relacionado con la cantidad de fosfatos en ríos?
+### 7. ¿El cáncer de estómago está relacionado con la cantidad de fosfatos en ríos?
 
 Como ya hemos analizado anteriormente tanto la cantidad de fosfatos en ríos como las tasas de cáncer de estómago en Europa, han disminuido con el paso de los años. Con estos resultados podemos pensar que existe una pequeña relación entre estos dos aspectos. Es decir, que los fosfatos que se encuentran en detergentes y fertilizantes pueden llegar a los rios dando lugar a una contaminación ambiental, y posteriormente ese agua podrá ser usado para regar en la agricultura, teniendo un impacto en la cadena alimentaria y por lo tanto en la salud humana.
 
 
-#### Referencias
+### 8. Referencias
 1. Unión Europea. (2012). Reglamento (UE) nº 259/2012 del Parlamento Europeo y del Consejo, de 14 de marzo de 2012, por el que se modifica el Reglamento (CE) nº 648/2004 en lo que se refiere al uso de fosfatos y otros compuestos de fósforo en detergentes para lavavajillas automáticos y para ropa destinados a los consumidores. Boletín Oficial del Estado.  https://www.boe.es/buscar/doc.php?id=DOUE-L-2012-80470
 2. Unión Europea. (n.d.). Good quality water in Europe: EU water directive. EUR-Lex.  https://eur-lex.europa.eu/ES/legal-content/summary/good-quality-water-in-europe-eu-water-directive.html
 

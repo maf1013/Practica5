@@ -76,61 +76,67 @@ ggplot(minimo_fosfato, aes(x = factor(Año), y = Cantidad_Fosfato, fill = País)
 
 #-----------------------------------------------------------------------------------
 
-#Ahora, vamos a estudiar la posible relación de la economía con el nivel de fosfato en ríos
-fosfato_economia<-left_join(x=economia,y=Fosfato,by= c("País","Año")) #Al hacer este join, se mantienen 
-#todos los años de datos de ECONOMIA, pero en los datos de fosfato, no hay valores para algunos 
-#años, para eliminar los valores de NA:
-fosfato_economia <- fosfato_economia[!is.na(fosfato_economia$Cantidad_Fosfato), ]
+# Ahora, vamos a estudiar la posible relación de la economía con el nivel de fosfato en ríos
+fosfato_economia <- Fosfato %>%
+  left_join(economia, by = c("País", "Año")) %>% # Al hacer este join, se mantienen todos los años de datos de ECONOMÍA, pero en los datos de fosfato, no hay valores para algunos años
+  filter(!is.na(PIB)) # Eliminamos las filas con NA en la columna PIB
 View(fosfato_economia)
 
-#como a mayor PIB, mayor es la economia de ese pais vamos a estudiar si a menor PIB hay mayor 
-#cantidad de fosfato en ríos.
-menor_PIB<- fosfato_economia%>%
-  group_by(Año)%>%
-  filter(PIB == min(PIB)) %>%
-  arrange(Año)
-View(menor_PIB)
+#Los datos que hemos conseguido de economía solo registran a partir del año 2012. Sabemos que 
+#A partir de el año 2012 el país que menos fosfato registró fue Noruega. Vamos a observar qué ranking de 
+#PIB ocupa noruega respecto del resto de países.
 
-fosfato_economia%>%
-  group_by(Año)%>%
-  filter(PIB == min(PIB)) %>%
-  arrange(Año)
-
-
-
-mayor_PIB<-fosfato_economia%>%
-  group_by(Año)%>%
-  filter(PIB == max(PIB)) %>%
-  arrange(Año)
-View(mayor_PIB)
-
-
-
-
-
-fosfato_economia_media <- fosfato_economia %>%
+ranking_noruega<-fosfato_economia%>%
   group_by(Año) %>%
-  summarise(Cantidad_Fosfato = mean(Cantidad_Fosfato, na.rm = TRUE),
-            PIB = mean(PIB, na.rm = TRUE))
+  # Crear el ranking dentro de cada año
+  mutate(ranking_pib = rank(-PIB, ties.method = "min")) %>%
+  # Filtrar solo para Norway
+  filter(País == "Norway") %>%
+  # Ordenar por año
+  arrange(Año) %>%
+  # Seleccionar las columnas relevantes
+  select(Año, PIB, ranking_pib,Cantidad_Fosfato) 
+View(ranking_noruega)
 
+#El país que más fosfato registró a partir del año 2012 fue el Norte de Macedonia, vamos a estudiar
+#qué ranking de PIB ocupa el Norte de Macedonia
 
-# Transformar los datos a formato largo para tener una columna común que distinga entre Fosfato y PIB
-fosfato_economia_long <- fosfato_economia_media %>%
+ranking_macedonia<-fosfato_economia%>%
+  group_by(Año) %>%
+  # Crea el ranking para cada año
+  mutate(ranking_pib = rank(-PIB, ties.method = "min")) %>%
+  #se calcula el ranking para la columna PIB (-) en la que el mayor valor del PIB 
+  #reciba el puesto número uno.Con ties.method="min" se asigna el mismo ranking a
+  #dos valores empatados.
+  filter(País == "North Macedonia") %>%
+  arrange(Año) %>%
+  select(Año, PIB, ranking_pib,Cantidad_Fosfato) 
+View(ranking_macedonia)
+
+#Vamos a crear un gráfico para observar los cambios
+
+library(ggplot2)
+library(tidyr)
+
+datos_combinados <- bind_rows(
+  ranking_noruega %>% mutate(Pais = "Noruega"),
+  ranking_macedonia %>% mutate(Pais = "Macedonia")
+)
+# Preparar los datos en formato largo
+datos_largo <- datos_combinados %>%
   pivot_longer(cols = c("Cantidad_Fosfato", "PIB"), 
                names_to = "Variable", 
                values_to = "Valor")
 
-
-ggplot(fosfato_economia_long, aes(x = Año, y = Valor, color = Variable))+
-  geom_point()+
-  geom_smooth(se = TRUE)+
-  facet_wrap(~ Variable, scales = "free_y", nrow = 2)+
+# Crear el gráfico
+ggplot(datos_largo, aes(x = Año, y = Valor, color = Pais)) +
+  geom_point(size=2) +
+  geom_smooth(se = TRUE,alpha=0.15) +
+  facet_wrap(~ Variable, scales = "free_y", nrow = 2) +
   labs(title = "Evolución fosfatos en ríos y \n PIB a lo largo del tiempo",
        x = "Año",
-       y = "Valor")+
-  scale_x_continuous(breaks = seq(min(fosfato_economia_long$Año), max(fosfato_economia_long$Año)))+
-  theme_light()+
+       y = "Valor") +
+  scale_x_continuous(breaks = seq(min(datos_largo$Año), max(datos_largo$Año))) +
+  theme_light() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-
 
