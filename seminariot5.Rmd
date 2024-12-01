@@ -173,7 +173,7 @@ DT::datatable(economia)
 
 ### 1. Evolución del fosfato en ríos a lo largo de los años.
 
-Vamos a comparar como evoluciona la cantidad de fosfato en los ríos a lo largo del tiempo, es decir desde el año 1992 hasta el año 2021.
+Se va a comparar cómo evoluciona la cantidad de fosfato en los ríos a lo largo del tiempo, desde el año 1992 hasta el año 2021.
 Para hacer esta comparación global se hará una media de la cantidad de fosfatos en ríos por año de todos los países participantes en el estudio.
 
 #### 1.1. Metodología y resultados
@@ -189,7 +189,7 @@ DT::datatable(promedio_fosfato_por_año)
 
 ```
 
-Vamos a visualizar mejor estos datos con un gráfico:
+Para visualizar mejor estos datos se realiza un gráfico:
 
 ```{r, echo=TRUE}
 grafico_fosfato_años<-ggplot(data=promedio_fosfato_por_año, aes(x=Año,y=Promedio_Fosfato))+
@@ -211,12 +211,13 @@ plot(grafico_fosfato_años)
 
 #### 1.2. Conclusiones
 
-Debido a la regulación de productos químicos y detergentes, la mejora en el tratamiento de aguas residuales, las prácticas agrícolas sostenibles y la directiva del marco de la UE se nota un descenso general en los niveles de fosfato de los ríos de Europa desde el año 2000 al año 2021. Esta tendencia la podemos ver en la gráfica.\n
-Por otro lado, el año en el que se empezó el estudio, año 1992, tenía 0.13035 mg de PO04 por litro. Sin embargo, el último año del que tenemos datos, es decir, año 2018, hay 0.0859 mg de PO04 por litro. Afirmando un notable descenso. 
+La gráfica refleja una disminución notable en las concentraciones de fosfatos en los ríos europeos entre 1992 y 2018, alcanzando un mínimo histórico en 2010. Este descenso, superior al 34%, se debe a la implementación de importantes políticas ambientales. Entre ellas destaca la **Directiva Marco del Agua**, que establece estándares para prevenir el deterioro de las masas de agua en la Unión Europea y alcanzar un "buen estado" ecológico en ríos, lagos y aguas subterráneas (un límite adecuado de fosfato es de 0.1 mg/L, pero puede variar dependiendo del tipo de agua y de la región). También ha influido la **prohibición de fosfatos en detergentes** y las mejoras en el tratamiento de aguas residuales.
+
+Sin embargo, el ligero aumento después de 2010 que podría deberse a factores como una mayor presión agrícola en ciertas regiones, resalta la necesidad de fortalecer las medidas para evitar un retroceso en la calidad del agua. 
 
 ### 2. Cantidad de fosfato en los distintos ríos de los paises europeos.
 
-A continuación vamos a agrupar los datos por años y determinaremos cuales fueron los paises europeos con más cantidades de fosfato por año.
+A continuación se agruparán los datos por años para determinar cuáles han sido los países europeos con más cantidades de fosfato.
 #### 2.1 Metodología y resultados
 ```{r, echo = TRUE}
 maximo_fosfato<- Fosfato%>%
@@ -228,7 +229,7 @@ maximo_fosfato<- Fosfato%>%
 ```{r, echo = FALSE}
 DT::datatable(maximo_fosfato)
 ```
-Podemos determinar que el país con ***más*** cantidad de fosfatos e sus ríos es:
+Se concluye que el país con ***más*** cantidad de fosfatos e sus ríos es:
 
 ```{r, echo = TRUE}
 pais_max <- Fosfato %>%
@@ -240,7 +241,7 @@ pais_max <- Fosfato %>%
 DT::datatable(pais_max)
 ```
 
-Podemos determinar que el país con ***menos*** cantidad de fosfatos e sus ríos es:
+ Se concluye que el país con ***menos*** cantidad de fosfatos e sus ríos es:
 
 ```{r, echo = TRUE}
 pais_min <- Fosfato %>%
@@ -252,7 +253,7 @@ pais_min <- Fosfato %>%
 DT::datatable(pais_min)
 ```
 
-A continuación realizaremos una gráfica donde podremos observar que a lo largo del tiempo,los países con más cantidad de fosfato en su ríos, son Bélgica, Bulgaria, Macedonia del Norte y Reino Unido. 
+Se realiza una gráfica en la que se puede observar que a lo largo del tiempo,los países con **mayor** cantidad de fosfato en su ríos son: Bélgica, Bulgaria, Macedonia del Norte y Reino Unido. 
 
 ```{r, echo=TRUE}
 grafico_paises_fosfato <- ggplot(maximo_fosfato, aes(x = factor(Año), y = Cantidad_Fosfato)) +
@@ -269,11 +270,30 @@ grafico_paises_fosfato <- ggplot(maximo_fosfato, aes(x = factor(Año), y = Canti
 plot(grafico_paises_fosfato)
 ```
 
+Se realiza otra gráfica en la que se puede observar que a lo largo del tiempo, el país que tiene **menor** cantidad de fosfato en sus ríos es Noruega.
+```{r, echo=TRUE}
+grafico_menor_fosfato<-ggplot(minimo_fosfato, aes(x = factor(Año), y = Cantidad_Fosfato, fill = País)) +
+  geom_bar(stat = "identity", position = "dodge") +  # Usa 'dodge' para separar las barras
+  labs(
+    title = "Países con menor concentración de fosfato en ríos",
+    x = "Año",  
+    y = "Concentración de Fosfato"
+  ) +
+  theme_light() +
+  theme(
+    axis.text.x = element_text(angle = 90, hjust = 1),  # 90 grados para etiquetas en el eje X
+    axis.title.x = element_text(size = 14),
+    axis.title.y = element_text(size = 14),
+    legend.position = "top"  # Ubicar la leyenda en la parte superior para que se vea con claridad
+  )
+```
+```{r,echo=FALSE}
+plot(grafico_menor_fosfato)
+```
+
 #### 2.2 Conclusiones
-
-En los años 2000, 2002, 2003, 2004 y 2012, Serbia registró los niveles más altos de fosfato en sus ríos, mientras que en el resto de los años fue el Norte de Macedonia quien reportó los peores datos. Al comparar estos niveles con los de países como Noruega, la diferencia es notable: por ejemplo, en el año 2000, el Norte de Macedonia alcanzó 0,4731 mg de PO₄ por litro, mientras que Noruega registró solo 0,004 mg de PO₄/L.
-
-Esta diferencia se debe a que países más desarrollados, como Noruega y Finlandia, tienen un PIB per cápita mucho más alto, lo que les permite invertir en sistemas avanzados de agua y saneamiento. Estos sistemas están altamente desarrollados y son muy eficientes en el tratamiento de aguas residuales, reduciendo significativamente los niveles de fosfato en sus ríos.
+Se observa una clara variabilidad en los niveles de fosfato de los ríos europeos según el país. **Noruega** presenta las concentraciones más bajas de fosfato, alcanzando un mínimo histórico de 0.001 mg/L en 2003. En cambio Bélgica, Reino Unido, Bulgaria y Macedonia del Norte registran los niveles más altos, destacando especialmente **Macedonia del Norte** en 2014, con una alarmante concentración de fosfato de 1.053 mg/L.
+¿Se podrían deber estas diferencias a los distintos niveles económicos? Se estudiará a continuación.
 
 #### 3. ¿El cancer de estómago se ve influenciado por el sexo de los pacientes?
 
@@ -298,3 +318,12 @@ En todos los países podemos ver que la incidencia se ha mantenido costante pero
 #### 6. ¿El cáncer de estómago está relacionado con la cantidad de fosfatos en ríos?
 
 Como ya hemos analizado anteriormente tanto la cantidad de fosfatos en ríos como las tasas de cáncer de estómago en Europa, han disminuido con el paso de los años. Con estos resultados podemos pensar que existe una pequeña relación entre estos dos aspectos. Es decir, que los fosfatos que se encuentran en detergentes y fertilizantes pueden llegar a los rios dando lugar a una contaminación ambiental, y posteriormente ese agua podrá ser usado para regar en la agricultura, teniendo un impacto en la cadena alimentaria y por lo tanto en la salud humana.
+
+
+#### Referencias
+1. Unión Europea. (2012). Reglamento (UE) nº 259/2012 del Parlamento Europeo y del Consejo, de 14 de marzo de 2012, por el que se modifica el Reglamento (CE) nº 648/2004 en lo que se refiere al uso de fosfatos y otros compuestos de fósforo en detergentes para lavavajillas automáticos y para ropa destinados a los consumidores. Boletín Oficial del Estado.  https://www.boe.es/buscar/doc.php?id=DOUE-L-2012-80470
+2. Unión Europea. (n.d.). Good quality water in Europe: EU water directive. EUR-Lex.  https://eur-lex.europa.eu/ES/legal-content/summary/good-quality-water-in-europe-eu-water-directive.html
+
+
+
+

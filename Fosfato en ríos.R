@@ -31,6 +31,11 @@ maximo_fosfato<- Fosfato%>%
   arrange(Año)
 
 View(maximo_fosfato)
+#Y los países con menor cantidad de fosfato
+minimo_fosfato<- Fosfato%>%
+  group_by(Año) %>%  # Agrupar los datos por Año
+  filter(Cantidad_Fosfato == min(Cantidad_Fosfato)) %>%
+  arrange(Año)
 
 #PAÍS CON MÁS FOSFATO
 pais_max <- Fosfato %>%
@@ -47,11 +52,27 @@ pais_min
 
 ggplot(maximo_fosfato, aes(x = factor(Año), y = Cantidad_Fosfato)) +
   geom_bar(aes(fill = País),stat = "identity") + 
-  labs( title = "País con mayor concentración de fosfato en ríos",
+  labs( title = "Países con mayor concentración de fosfato en ríos",
         x = "País",
         y = "Concentración de Fosfato") +
   theme_light()+
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+#Se realiza otro diagrama de barras para tener en cuenta cuáles son los países con menos fosfato
+ggplot(minimo_fosfato, aes(x = factor(Año), y = Cantidad_Fosfato, fill = País)) +
+  geom_bar(stat = "identity", position = "dodge") +  # Usa 'dodge' para separar las barras
+  labs(
+    title = "Países con menor concentración de fosfato en ríos",
+    x = "Año",  
+    y = "Concentración de Fosfato"
+  ) +
+  theme_light() +
+  theme(
+    axis.text.x = element_text(angle = 90, hjust = 1),  # 90 grados para etiquetas en el eje X
+    axis.title.x = element_text(size = 14),
+    axis.title.y = element_text(size = 14),
+    legend.position = "top"  # Ubicar la leyenda en la parte superior para que se vea con claridad
+  )
 
 #-----------------------------------------------------------------------------------
 
