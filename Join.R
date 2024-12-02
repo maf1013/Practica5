@@ -18,7 +18,7 @@ cancer_fosfato_long <- cancer_fosfatos_media %>%
                names_to = "Variable",
                values_to = "Valor")
 
-ggplot(cancer_fosfato_long, aes(x = Año, y = Valor, color = Variable))+
+grafico_cancer_fosfato <- ggplot(cancer_fosfato_long, aes(x = Año, y = Valor, color = Variable))+
   geom_point()+
   geom_smooth(se = TRUE)+
   facet_wrap(~ Variable, scales = "free_y", nrow = 2)+
@@ -29,4 +29,13 @@ ggplot(cancer_fosfato_long, aes(x = Año, y = Valor, color = Variable))+
   theme_light()+
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-
+ggsave(
+  filename = "Relacion_cancer_fosfato.png",
+  plot = grafico_cancer_fosfato ,
+  path = "OUTPUT/FIGURES", 
+  scale = 0.5,
+  width = 40,
+  height = 20,
+  units = "cm",
+  dpi = 320
+)
