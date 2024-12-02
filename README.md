@@ -1,4 +1,4 @@
-# FOSFATO EN RÍOS, CÁNCER DE ESTÓMAGO Y ECONOMÍA <img src="INPUT/IMAGES/Logo_Universidad_Burgos.png" align="right" height="200"/>
+# [CÁNCER DE ESTÓMAGO, FOSFATO EN RÍOS Y ECONOMÍA]{style="color: #0e69b5"} <img src="INPUT/IMAGES/Logo_Universidad_Burgos.png" align="right" height="180"/>
 
 #### Carmen Albillos Gubia
 
